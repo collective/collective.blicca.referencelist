@@ -30,7 +30,6 @@ dependencies = [
     # declares. The two signals are independent; this add-on needs both.
     "plone.blicca.auroraeditor>=1.0.0a3",
     "plone.restapi",
-    "setuptools<81",
 ]
 
 [project.optional-dependencies]
