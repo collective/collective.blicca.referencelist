@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="collective.blicca.referencelist">
+
+  <browser:page
+      name="aurora-block-referencelist"
+      for="*"
+      class=".reference_list_block_view.ReferenceListBlockView"
+      template="reference_list_block_view.pt"
+      permission="zope2.View"
+      layer="collective.blicca.referencelist.interfaces.ICollectiveBliccaReferencelistLayer"
+      />
+
+</configure>

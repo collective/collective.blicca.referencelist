@@ -32,4 +32,7 @@
       handler="collective.blicca.referencelist.setuphandlers.uninstall"
       />
 
+
+  <include package=".views" />
+
 </configure>
