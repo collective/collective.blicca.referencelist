@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0a1 (unreleased)
+## 1.0.0a1 (2026-10-08)
 
 - The References field is the content browser itself: the picked items are
   always listed in it, several are picked in one visit, and removing or
