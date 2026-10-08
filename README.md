@@ -140,49 +140,144 @@ for one variation without touching the rest:
 | Each item | `aurora-referencelist-item-<variation>-<portal_type>`, `aurora-referencelist-item-<variation>`, `aurora-referencelist-item-<portal_type>`, then `aurora-referencelist-item` |
 
 The names without a suffix are the stock templates this package registers.
-To replace one, register a view under the more specific name on your own
+To replace one, register a view under a more specific name on your own
 browser layer (`for="*"`, permission `zope2.View`) and subclass the base
-class from `collective.blicca.referencelist.rendering`. The portal type
-goes into the name verbatim, space included: `aurora-referencelist-item-summary-News Item`.
+class from `collective.blicca.referencelist.rendering`. A distinct name
+always wins, so an override never depends on the order of browser layers.
 
-```xml
-<browser:page
-    name="aurora-referencelist-item-grid"
-    for="*"
-    class=".cards.GridCard"
-    template="grid_card.pt"
-    permission="zope2.View"
-    layer=".interfaces.IMyThemeLayer"
-    />
-```
+The templates render the public page only. The editor canvas shows the
+stock card for every item.
 
-```python
-from collective.blicca.referencelist.rendering import BaseReferenceListItemView
+### An item template
+
+An item template renders one referenced item. Its name says which items it
+covers:
+
+| Name | Renders |
+|---|---|
+| `aurora-referencelist-item-<portal_type>` | Items of one content type, on every variation |
+| `aurora-referencelist-item-<variation>` | Every item on one variation |
+| `aurora-referencelist-item-<variation>-<portal_type>` | Items of one content type on one variation |
+
+The variation is `default`, `summary` or `grid`. The portal type goes into
+the name verbatim, space included: `aurora-referencelist-item-News Item`.
+A variation's template outranks a content type's, so a theme that
+registers `aurora-referencelist-item-grid` renders every type with it on
+the grid, whatever cards the types have elsewhere.
+
+As an example, an Event card that shows the event's location below its
+title, on every variation.
+
+1. Register the view on your theme's or add-on's browser layer:
+
+   ```xml
+   <browser:page
+       name="aurora-referencelist-item-Event"
+       for="*"
+       class=".referencelist.EventCard"
+       template="referencelist_event_card.pt"
+       permission="zope2.View"
+       layer=".interfaces.IMyThemeLayer"
+       />
+   ```
+
+2. Subclass `BaseReferenceListItemView` and derive what the card needs
+   from `self.item`:
+
+   ```python
+   from collective.blicca.referencelist.rendering import BaseReferenceListItemView
 
 
-class GridCard(BaseReferenceListItemView):
-    """The grid card: whatever the theme wants, from the stamped item."""
-```
+   class EventCard(BaseReferenceListItemView):
+       @property
+       def css_class(self):
+           return f"{super().css_class} event"
 
-What the base classes give a template:
+       @property
+       def location(self):
+           return (self.item or {}).get("location") or ""
+   ```
 
-- `BaseReferenceListView` (the list) is stamped with `data`, the block's
-  data, and `items`, the referenced items' JSON summaries in stored order.
-  It derives `variation`, `headline`, `headline_tag`, `item_title_tag`,
-  `shows_cards` and `css_class`, and `rendered_items`, the items rendered
-  through their item templates. A custom list template normally emits its
-  own wrapper around `rendered_items`.
-- `BaseReferenceListItemView` (one item) is stamped with `item`, the
-  summary (every catalog metadata column, `image_scales` included), `data`,
-  `variation`, `title_tag`, `position` (0-based) and `total`. It derives
-  `portal_type`, `url` (screened, `None` when the target must not be
-  linked), `title`, `description`, `shows_cards`, `css_class` and `image`
-  (`src`, `srcset`, `avif_srcset`, `sizes`, `width`, `height`, or `None`).
+3. Write the template. Start from the stock one,
+   `views/reference_list_item_view.pt`, so the card keeps the block's
+   markup and styles:
 
-A variation's item template outranks a content type's card, so a theme
-that registers `aurora-referencelist-item-grid` renders every type with it
-on the grid, whatever cards the types have elsewhere. The editor canvas
-does not take part: it shows the generic card for every item.
+   ```html
+   <article xmlns:tal="http://xml.zope.org/namespaces/tal"
+            tal:attributes="class view/css_class">
+     <tal:media tal:condition="view/shows_cards"
+                tal:define="image view/image">
+       <picture tal:condition="image">
+         <source type="image/avif"
+                 tal:condition="image/avif_srcset | nothing"
+                 tal:attributes="srcset image/avif_srcset;
+                                 sizes image/sizes | nothing" />
+         <img alt="" loading="lazy" decoding="async"
+              tal:attributes="src image/src;
+                              srcset image/srcset | nothing;
+                              sizes image/sizes | nothing;
+                              width image/width;
+                              height image/height" />
+       </picture>
+     </tal:media>
+     <div class="item-content">
+       <h2 tal:condition="python: view.title_tag == 'h2'">
+         <a tal:attributes="href view/url" tal:content="view/title">title</a>
+       </h2>
+       <h3 tal:condition="python: view.title_tag == 'h3'">
+         <a tal:attributes="href view/url" tal:content="view/title">title</a>
+       </h3>
+       <h4 tal:condition="python: view.title_tag == 'h4'">
+         <a tal:attributes="href view/url" tal:content="view/title">title</a>
+       </h4>
+       <p class="event-location"
+          tal:condition="view/location"
+          tal:content="view/location">location</p>
+       <p tal:condition="view/description"
+          tal:content="view/description">description</p>
+     </div>
+   </article>
+   ```
+
+What `BaseReferenceListItemView` gives a template:
+
+| Attribute | Value |
+|---|---|
+| `item` | The item's JSON summary: every catalog metadata column, `image_scales` included |
+| `data` | The block's data |
+| `variation` | The variation in effect |
+| `title_tag` | The heading level of the item title: `h2`, `h3` or `h4` |
+| `position`, `total` | The item's place in the list (0-based) and the number of items |
+| `portal_type` | The item's content type |
+| `url` | The item's link, `None` when the target must not be linked |
+| `title`, `description` | The item's title (its id when it has none) and description |
+| `shows_cards` | True on the `summary` and `grid` variations |
+| `css_class` | `item`, plus `summary` when `shows_cards` |
+| `image` | `src`, `srcset`, `avif_srcset`, `sizes`, `width` and `height` of the item's picture, sized for the block, or `None` |
+
+Rules worth knowing:
+
+- Keep `view/css_class` on the card's root. The block's dividers, card and
+  grid styles hang on `item` and `summary`.
+- Read extra fields from `self.item`, not from the object: the summary
+  carries every catalog metadata column, so the card wakes no object.
+  Dates are ISO 8601 strings.
+- `tal:attributes` leaves out an attribute whose value is `None`, so a
+  title link to a target that must not be linked renders without `href`.
+- `index` is the view's own template. Do not use the name for anything
+  else.
+
+### A list template
+
+A list template renders the block's wrapper, headline and items. Register
+it as `aurora-referencelist-<variation>` and subclass
+`BaseReferenceListView`. It gets `data` and `items` (the referenced items'
+JSON summaries, in stored order) and derives `variation`, `headline`,
+`headline_tag`, `item_title_tag`, `shows_cards`, `css_class` and
+`rendered_items`, the items already rendered through their item templates.
+A list template emits its own wrapper and inserts `rendered_items` with
+`structure`; start from the stock `views/reference_list_view.pt` and keep
+`view/css_class` on the root.
 
 ## How it works
 
