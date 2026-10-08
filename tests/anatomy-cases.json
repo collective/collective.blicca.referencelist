@@ -1,0 +1,109 @@
+{
+  "about": "The anatomy both renderers emit for the same block data. `html` is the skeleton: tags, classes and text; attributes other than class are dropped before comparing, the AVIF source the page adds is dropped too, and inter-element whitespace is collapsed. Read by src/collective/blicca/referencelist/tests/test_anatomy.py and bundle-src/test/anatomy.test.tsx alike.",
+  "cases": [
+    {
+      "name": "empty",
+      "note": "Nothing referenced: the root alone. The canvas adds its own placeholder outside the root.",
+      "data": {"references": [], "items": []},
+      "html": "<div class=\"referencelist variation-default\"></div>"
+    },
+    {
+      "name": "headline-only",
+      "note": "A headline with nothing under it still renders, so the author sees what the page will show.",
+      "data": {"headline": "Related", "references": [], "items": []},
+      "html": "<div class=\"referencelist variation-default\"><h2 class=\"headline\">Related</h2></div>"
+    },
+    {
+      "name": "default-stack",
+      "note": "The default variation: a stack of articles, titles linked, descriptions under them, no pictures.",
+      "data": {
+        "items": [
+          {"@id": "http://nohost/plone/page", "@type": "Document", "title": "A page", "description": "Page description"},
+          {"@id": "http://nohost/plone/news", "@type": "News Item", "title": "The scoop", "description": ""}
+        ]
+      },
+      "html": "<div class=\"referencelist variation-default\"><div class=\"referencelist-items\"><article class=\"item\"><div class=\"item-content\"><h2><a>A page</a></h2><p>Page description</p></div></article><article class=\"item\"><div class=\"item-content\"><h2><a>The scoop</a></h2></div></article></div></div>"
+    },
+    {
+      "name": "headline-levels",
+      "note": "With a visible h2 headline the item titles are h3; with an h3 headline they are h4.",
+      "data": {
+        "headline": "Related",
+        "headlineTag": "h3",
+        "items": [{"@id": "http://nohost/plone/page", "@type": "Document", "title": "A page"}]
+      },
+      "html": "<div class=\"referencelist variation-default\"><h3 class=\"headline\">Related</h3><div class=\"referencelist-items\"><article class=\"item\"><div class=\"item-content\"><h4><a>A page</a></h4></div></article></div></div>"
+    },
+    {
+      "name": "summary-cards",
+      "note": "The summary variation: a picture over each card that has one, the card without a picture keeps its shape.",
+      "data": {
+        "variation": "summary",
+        "headline": "Related",
+        "items": [
+          {
+            "@id": "http://nohost/plone/news",
+            "@type": "News Item",
+            "title": "The scoop",
+            "description": "News description",
+            "image_field": "image",
+            "image_scales": {
+              "image": [
+                {
+                  "download": "@@images/image-1600-abc.png",
+                  "width": 1600,
+                  "height": 900,
+                  "base_path": "/plone/news",
+                  "scales": {
+                    "preview": {"download": "@@images/image-400-abc.png", "width": 400, "height": 225},
+                    "large": {"download": "@@images/image-800-abc.png", "width": 800, "height": 450}
+                  }
+                }
+              ]
+            }
+          },
+          {"@id": "http://nohost/plone/page", "@type": "Document", "title": "A page"}
+        ]
+      },
+      "html": "<div class=\"referencelist variation-summary\"><h2 class=\"headline\">Related</h2><div class=\"referencelist-items\"><article class=\"item summary\"><picture><img></picture><div class=\"item-content\"><h3><a>The scoop</a></h3><p>News description</p></div></article><article class=\"item summary\"><div class=\"item-content\"><h3><a>A page</a></h3></div></article></div></div>"
+    },
+    {
+      "name": "grid-cards",
+      "note": "The grid variation lays the summary cards out in columns; the cards themselves are the same.",
+      "data": {
+        "variation": "grid",
+        "items": [
+          {
+            "@id": "http://nohost/plone/news",
+            "@type": "News Item",
+            "title": "The scoop",
+            "image_field": "image",
+            "image_scales": {
+              "image": [
+                {
+                  "download": "@@images/image-1600-abc.png",
+                  "width": 1600,
+                  "height": 900,
+                  "base_path": "/plone/news",
+                  "scales": {
+                    "preview": {"download": "@@images/image-400-abc.png", "width": 400, "height": 225}
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "html": "<div class=\"referencelist variation-grid\"><div class=\"referencelist-items\"><article class=\"item summary\"><picture><img></picture><div class=\"item-content\"><h2><a>The scoop</a></h2></div></article></div></div>"
+    },
+    {
+      "name": "unknown-variation",
+      "note": "A variation the block does not know renders as the default one.",
+      "data": {
+        "variation": "cards",
+        "items": [{"@id": "http://nohost/plone/page", "@type": "Document", "title": "A page"}]
+      },
+      "html": "<div class=\"referencelist variation-default\"><div class=\"referencelist-items\"><article class=\"item\"><div class=\"item-content\"><h2><a>A page</a></h2></div></article></div></div>"
+    }
+  ]
+}

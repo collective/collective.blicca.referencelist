@@ -1,27 +1,20 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n_domain="collective.blicca.referencelist">
-
-  <body>
-    <metal:title fill-slot="content-title">
-      <h1 class="documentFirstHeading" tal:content="structure context/@@title">
-        Title
-      </h1>
-    </metal:title>
-
-    <metal:description fill-slot="content-description">
-      <p class="documentDescription" tal:content="structure context/@@description">
-        Description
-      </p>
-    </metal:description>
-
-    <metal:content-core fill-slot="content-core">
-      <h2>ReferenceListView</h2>
-      <p>The stock list template of the Reference List block</p>
-    </metal:content-core>
-  </body>
-</html>
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:attributes="class view/css_class"
+     tal:define="items view/rendered_items">
+  <!--! The same anatomy the React view (bundle-src/src/referencelist/
+        ReferenceListView.tsx) emits: one scope-wrapped stylesheet dresses the
+        canvas and the public page. An empty list renders the headline alone;
+        the editor canvas is where "no references yet" is said. -->
+  <tal:headline tal:condition="view/headline">
+    <h2 class="headline"
+        tal:condition="python: view.headline_tag == 'h2'"
+        tal:content="view/headline">headline</h2>
+    <h3 class="headline"
+        tal:condition="python: view.headline_tag == 'h3'"
+        tal:content="view/headline">headline</h3>
+  </tal:headline>
+  <div class="referencelist-items" tal:condition="items">
+    <tal:item tal:repeat="item items"
+              tal:replace="structure item" />
+  </div>
+</div>

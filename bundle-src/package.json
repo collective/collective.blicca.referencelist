@@ -1,0 +1,51 @@
+{
+  "name": "@plone-collective/aurora-referencelist-block",
+  "version": "1.0.0-alpha.1",
+  "description": "Aurora reference list block: picked content items rendered like a listing, as a stack, summary cards or a grid",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "aurora",
+    "plone",
+    "block",
+    "listing",
+    "references"
+  ],
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.*"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@plone/helpers": "^2.0.0-alpha.7",
+    "@plone/registry": "^4.0.0-alpha.1",
+    "react": "^18 || ^19"
+  },
+  "devDependencies": {
+    "@plone/blocks": "1.0.0-alpha.11",
+    "@plone/cmsui": "1.0.0-alpha.4",
+    "@plone/components": "5.0.0-alpha.1",
+    "@plone/helpers": "2.0.0-alpha.7",
+    "@plone/layout": "1.0.0-alpha.9",
+    "@plone/plate": "1.0.0-alpha.9",
+    "@plone/registry": "4.0.0-alpha.1",
+    "@plone/theming": "1.0.0-alpha.6",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.0.0",
+    "jsdom": "^26.0.0",
+    "postcss": "^8.5.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^7.0.0",
+    "vitest": "^3.0.0"
+  }
+}

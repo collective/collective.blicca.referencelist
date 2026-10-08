@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      BLICCA_SSH_KEY: ${{ secrets.BLICCA_SSH_KEY }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      # plone.blicca.auroraeditor is private and not on PyPI: it is the editor
+      # this block mounts in and the source of the rendering API the package
+      # imports, so without it nothing installs and nothing is tested. Use a
+      # read-only deploy key scoped to the host repository.
+      - name: Require the host checkout key
+        if: env.BLICCA_SSH_KEY == ''
+        run: |
+          echo "::error::BLICCA_SSH_KEY is not set. This package depends on"
+          echo "::error::plone.blicca.auroraeditor, which is private and not"
+          echo "::error::on PyPI, so the tests cannot run."
+          exit 1
+
+      # pyproject resolves the host from `../plone.blicca.auroraeditor`, so this
+      # repository checks itself out into a subdirectory and the host lands
+      # beside it, exactly as they sit under a site's `sources/`.
+      - uses: actions/checkout@v5
+        with:
+          path: collective.blicca.referencelist
+
+      - uses: actions/checkout@v5
+        with:
+          repository: derico-de/plone.blicca.auroraeditor
+          ssh-key: ${{ env.BLICCA_SSH_KEY }}
+          persist-credentials: false
+          path: plone.blicca.auroraeditor
+
+      - name: Set up uv and Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run tests
+        working-directory: collective.blicca.referencelist
+        run: uv run --frozen --extra test pytest -v
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+
+      - name: Run ruff
+        run: uvx ruff@0.16.6 check .
+
+  bundle:
+    # The editor half is committed build output (no Node on the deploy host),
+    # so nothing rebuilds it at install time. The diff check below is what
+    # makes committing an artifact safe.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.3.4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: bundle-src/.nvmrc
+          cache: pnpm
+          cache-dependency-path: bundle-src/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        working-directory: bundle-src
+
+      - name: Typecheck
+        run: pnpm typecheck
+        working-directory: bundle-src
+
+      - name: Build
+        run: pnpm build
+        working-directory: bundle-src
+
+      # After the build: the harness reads the built artifact.
+      - name: Test
+        run: pnpm test
+        working-directory: bundle-src
+
+      - name: The committed bundle is the one this source builds
+        run: git diff --exit-code -- src/collective/blicca/referencelist/static/

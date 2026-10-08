@@ -1,5 +1,6 @@
 """Setup handlers for collective.blicca.referencelist."""
-from Products.CMFPlone.interfaces import INonInstallable
+
+from plone.base.interfaces import INonInstallable
 from zope.interface import implementer
 
 

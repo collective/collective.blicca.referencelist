@@ -1,15 +1,12 @@
-"""ReferenceListView browser view.
+"""The stock list template (``@@aurora-referencelist``).
 
-The stock list template of the Reference List block
+A headline, then every referenced item through its item template. A theme
+replaces it for one variation by registering ``aurora-referencelist-<variation>``
+on its own browser layer, subclassing ``BaseReferenceListView``.
 """
-from Products.Five.browser import BrowserView
+
+from collective.blicca.referencelist.views.base import BaseReferenceListView
 
 
-class ReferenceListView(BrowserView):
-    """The stock list template of the Reference List block"""
-
-    # If you need to override the template registered in configure.zcml:
-    # index = ViewPageTemplateFile("reference_list_view.pt")
-
-    def __call__(self):
-        return self.index()
+class ReferenceListView(BaseReferenceListView):
+    """The stock list: headline and the rendered items."""

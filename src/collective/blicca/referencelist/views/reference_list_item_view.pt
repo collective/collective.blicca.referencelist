@@ -1,27 +1,40 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n_domain="collective.blicca.referencelist">
-
-  <body>
-    <metal:title fill-slot="content-title">
-      <h1 class="documentFirstHeading" tal:content="structure context/@@title">
-        Title
-      </h1>
-    </metal:title>
-
-    <metal:description fill-slot="content-description">
-      <p class="documentDescription" tal:content="structure context/@@description">
-        Description
-      </p>
-    </metal:description>
-
-    <metal:content-core fill-slot="content-core">
-      <h2>ReferenceListItemView</h2>
-      <p>The stock item template of the Reference List block</p>
-    </metal:content-core>
-  </body>
-</html>
+<article xmlns:tal="http://xml.zope.org/namespaces/tal"
+         tal:attributes="class view/css_class">
+  <!--! The same anatomy the React view emits. The picture is decorative:
+        the title link beside it carries the item's name, so an alt repeating
+        it would be read twice. The AVIF source is delivery, not anatomy; the
+        editor's renderer keeps picture > img. -->
+  <tal:media tal:condition="view/shows_cards"
+             tal:define="image view/image">
+    <picture tal:condition="image">
+      <source type="image/avif"
+              tal:condition="image/avif_srcset | nothing"
+              tal:attributes="srcset image/avif_srcset;
+                              sizes image/sizes | nothing" />
+      <img alt=""
+           loading="lazy"
+           decoding="async"
+           tal:attributes="src image/src;
+                           srcset image/srcset | nothing;
+                           sizes image/sizes | nothing;
+                           width image/width;
+                           height image/height" />
+    </picture>
+  </tal:media>
+  <div class="item-content">
+    <h2 tal:condition="python: view.title_tag == 'h2'">
+      <a tal:attributes="href view/url"
+         tal:content="view/title">title</a>
+    </h2>
+    <h3 tal:condition="python: view.title_tag == 'h3'">
+      <a tal:attributes="href view/url"
+         tal:content="view/title">title</a>
+    </h3>
+    <h4 tal:condition="python: view.title_tag == 'h4'">
+      <a tal:attributes="href view/url"
+         tal:content="view/title">title</a>
+    </h4>
+    <p tal:condition="view/description"
+       tal:content="view/description">description</p>
+  </div>
+</article>

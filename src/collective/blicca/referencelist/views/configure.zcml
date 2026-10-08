@@ -3,15 +3,21 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="collective.blicca.referencelist">
 
+  <!-- The block add-on contract's dispatch convention (§5.1): the renderer
+       is looked up as `aurora-block-<@type>` and nothing else. `for="*"`,
+       because a reference list can be authored on any blocks container and
+       on the site root. No template: the view hands the block to the
+       variation's list template below. -->
   <browser:page
       name="aurora-block-referencelist"
       for="*"
       class=".reference_list_block_view.ReferenceListBlockView"
-      template="reference_list_block_view.pt"
       permission="zope2.View"
       layer="collective.blicca.referencelist.interfaces.ICollectiveBliccaReferencelistLayer"
       />
 
+  <!-- The stock list template. A theme replaces it for one variation by
+       registering `aurora-referencelist-<variation>` on its own layer. -->
   <browser:page
       name="aurora-referencelist"
       for="*"
@@ -21,6 +27,10 @@
       layer="collective.blicca.referencelist.interfaces.ICollectiveBliccaReferencelistLayer"
       />
 
+  <!-- The stock item template. A theme replaces it by registering
+       `aurora-referencelist-item-<variation>`,
+       `aurora-referencelist-item-<portal_type>` or
+       `aurora-referencelist-item-<variation>-<portal_type>` on its own layer. -->
   <browser:page
       name="aurora-referencelist-item"
       for="*"

@@ -25,6 +25,37 @@
       directory="profiles/uninstall"
       />
 
+  <!-- Derive the referenced items' summaries on every serialization and
+       strip them again on save (block add-on contract §5.3): the editor
+       canvas and the public renderer read the same `items`, and nothing
+       derived is ever persisted. -->
+  <subscriber
+      factory=".transform.ReferenceListSerializer"
+      provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
+      />
+  <subscriber
+      factory=".transform.ReferenceListSerializerRoot"
+      provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
+      />
+  <subscriber
+      factory=".transform.ReferenceListDeserializer"
+      provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"
+      />
+  <subscriber
+      factory=".transform.ReferenceListDeserializerRoot"
+      provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"
+      />
+
+  <!-- Serves the committed editor bundle and its scope-wrapped sheet as
+       ++plone++collective.blicca.referencelist/... (block add-on contract
+       §3.1). `type="plone"`, never ++resource++: a second URL for the same
+       module means a second React inside Plate. -->
+  <plone:static
+      name="collective.blicca.referencelist"
+      type="plone"
+      directory="static"
+      />
+
   <genericsetup:importStep
       name="collective.blicca.referencelist-uninstall"
       title="Collective Blicca Referencelist uninstall"
@@ -32,6 +63,11 @@
       handler="collective.blicca.referencelist.setuphandlers.uninstall"
       />
 
+  <!-- Keep the uninstall profile out of the Add-ons control panel. -->
+  <utility
+      factory=".setuphandlers.HiddenProfiles"
+      name="collective.blicca.referencelist-hiddenprofiles"
+      />
 
   <include package=".views" />
 

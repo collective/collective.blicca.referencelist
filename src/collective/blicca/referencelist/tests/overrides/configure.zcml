@@ -1,0 +1,42 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="collective.blicca.referencelist">
+
+  <!-- The list template of one variation. -->
+  <browser:page
+      name="aurora-referencelist-summary"
+      for="*"
+      class=".browser.ThemeSummaryListView"
+      permission="zope2.View"
+      layer=".interfaces.IReferenceListOverridesLayer"
+      />
+
+  <!-- The item template of one variation. -->
+  <browser:page
+      name="aurora-referencelist-item-grid"
+      for="*"
+      class=".browser.ThemeGridItemView"
+      permission="zope2.View"
+      layer=".interfaces.IReferenceListOverridesLayer"
+      />
+
+  <!-- A content type's card for one variation; the portal_type verbatim. -->
+  <browser:page
+      name="aurora-referencelist-item-default-News Item"
+      for="*"
+      class=".browser.ThemeNewsDefaultItemView"
+      permission="zope2.View"
+      layer=".interfaces.IReferenceListOverridesLayer"
+      />
+
+  <!-- A content type's card for every variation. -->
+  <browser:page
+      name="aurora-referencelist-item-Event"
+      for="*"
+      class=".browser.ThemeEventItemView"
+      permission="zope2.View"
+      layer=".interfaces.IReferenceListOverridesLayer"
+      />
+
+</configure>

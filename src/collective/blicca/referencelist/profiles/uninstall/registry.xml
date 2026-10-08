@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<registry>
+
+  <!-- In lockstep with the browser layer the uninstall profile removes: an
+       orphaned record would keep the editor loading a bundle whose server
+       renderer is gone. `remove` expands to one purge per field of the
+       interface under exactly this prefix. -->
+  <records
+      interface="plone.blicca.auroraeditor.interfaces.IAuroraBlockAddon"
+      prefix="plone.blicca.auroraeditor.blockaddons/collective.blicca.referencelist.referencelist"
+      remove="true"
+      />
+
+</registry>

@@ -25,6 +25,11 @@ keywords = ["Plone", "CMS"]
 
 dependencies = [
     "Plone>=6.0",
+    # The block imports plone.blicca.auroraeditor.rendering, which is versioned
+    # by this distribution and not by the block-api number the registry record
+    # declares. The two signals are independent; this add-on needs both.
+    "plone.blicca.auroraeditor>=1.0.0a3",
+    "plone.restapi",
     "setuptools<81",
 ]
 
@@ -52,6 +57,16 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/collective"]
+
+[tool.uv]
+# Resolve against the Plone the site actually runs, so the lock CI installs is
+# the combination this add-on is developed against.
+constraint-dependencies = ["Products.CMFPlone==6.2.2"]
+
+[tool.uv.sources]
+# plone.blicca.auroraeditor is not on PyPI. Locally it is the sibling checkout;
+# CI checks it out beside this repository so the same relative path resolves.
+"plone.blicca.auroraeditor" = { path = "../plone.blicca.auroraeditor", editable = true }
 
 [tool.plone.backend_addon.settings]
 package_name = "collective.blicca.referencelist"

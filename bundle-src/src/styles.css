@@ -1,0 +1,132 @@
+/*
+ * The Reference List's one stylesheet. It dresses both surfaces, the React
+ * view and the Chameleon templates, through anatomy-class parity (block
+ * add-on contract §6.1). Packaging wraps the whole file in
+ *
+ *   @scope (.aurora-editor, .aurora-editor-portal, .aurora-blocks-view)
+ *       to (.aurora-pattern-island)
+ *
+ * so nothing here is prefixed with a root. The rules mirror the listing
+ * block's (plone.blicca.auroraeditor's blocks_view.css): the same stacked
+ * cards, the same quiet dividers, so a reference list reads like a listing.
+ * Every rule descends from `.referencelist`, the block's own root. The
+ * editor's notice is the one element outside it.
+ *
+ * Themeable through `--referencelist-divider`, which falls back to the
+ * editor's `--aurora-divider`.
+ */
+
+.referencelist {
+  line-height: 1.5;
+}
+.referencelist .headline {
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.referencelist h2.headline {
+  font-size: 1.5rem;
+}
+.referencelist h3.headline {
+  font-size: 1.25rem;
+}
+.referencelist-items {
+  display: grid;
+  gap: 0;
+}
+.referencelist .item {
+  margin: 0;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--referencelist-divider, var(--aurora-divider, #cbd5e1));
+}
+.referencelist .item:first-child {
+  padding-top: 0.75rem;
+}
+.referencelist .item-content {
+  min-width: 0;
+}
+.referencelist .item.summary picture {
+  display: block;
+  margin: 0 0 1.5rem;
+}
+.referencelist .item.summary picture img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  object-fit: cover;
+}
+.referencelist a {
+  color: inherit;
+  text-decoration: none;
+}
+.referencelist a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.referencelist a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+.referencelist .item-content h2,
+.referencelist .item-content h3,
+.referencelist .item-content h4 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.referencelist .item-content h2,
+.referencelist .item-content h3 {
+  font-size: 1.25rem;
+}
+.referencelist .item-content h4 {
+  font-size: 1.125rem;
+}
+.referencelist .item-content p {
+  max-width: 70ch;
+  margin: 0.75rem 0 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* The grid variation lays the summary cards out in columns. They stack
+ * until the block itself is wider than 34rem (so a grid in a narrow column
+ * stacks with the column), two columns beyond that and three past 60rem,
+ * which a default block never reaches and a layout one does. A row's cards
+ * share its height, so the dividers line up. */
+.referencelist.variation-grid {
+  container-type: inline-size;
+}
+.referencelist.variation-grid .referencelist-items {
+  gap: 1.5rem var(--aurora-column-gutter, 2rem);
+  padding-top: 0.75rem;
+}
+.referencelist.variation-grid .item,
+.referencelist.variation-grid .item:first-child {
+  padding: 0 0 1.5rem;
+}
+@container (width > 34rem) {
+  .referencelist.variation-grid .referencelist-items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (width > 60rem) {
+  .referencelist.variation-grid .referencelist-items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* The editor's notices: outside the root, never on the public page. */
+.referencelist-notice {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--referencelist-divider, var(--aurora-divider, #cbd5e1));
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  opacity: 0.8;
+}
