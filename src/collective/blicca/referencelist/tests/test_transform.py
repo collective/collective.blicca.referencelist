@@ -70,6 +70,23 @@ class TestSerializer(TransformTestCase):
         assert [item["title"] for item in out["items"]] == ["A page"]
         assert out["missing"] == ["../resolveuid/gone"]
 
+    def test_a_reference_without_uid_gets_the_one_it_names(self):
+        stored = self._ref(self.page)
+        value = {
+            "@type": REFERENCELIST_BLOCK_TYPE,
+            "references": [stored, {"@id": self.doc.absolute_url()}, "../resolveuid/gone"],
+        }
+        out = ReferenceListSerializer(self.doc, self.request)(value)
+        assert out["references"] == [
+            stored,
+            {"@id": self.doc.absolute_url(), "UID": IUUID(self.doc)},
+            {"@id": "../resolveuid/gone", "UID": "gone"},
+        ]
+
+    def test_a_block_without_references_gets_none(self):
+        out = ReferenceListSerializer(self.doc, self.request)({"@type": REFERENCELIST_BLOCK_TYPE})
+        assert "references" not in out
+
     def test_replaces_whatever_derived_data_arrived(self):
         value = {
             "@type": REFERENCELIST_BLOCK_TYPE,

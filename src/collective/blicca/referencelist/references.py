@@ -58,6 +58,21 @@ def reference_uid(context, reference):
     return match.group(1) if match else None
 
 
+def with_uids(context, references):
+    """The stored references, each carrying the UID it names.
+
+    The editor's content picker tracks a selection by UID, so a reference
+    stored with an ``@id`` only would be invisible to it.
+    """
+    result = []
+    for reference in stored_references(references):
+        uid = reference_uid(context, reference)
+        if uid and reference.get("UID") != uid:
+            reference = {**reference, "UID": uid}
+        result.append(reference)
+    return result
+
+
 def _summaries_by_uid(context, request, uids):
     if not uids:
         return {}

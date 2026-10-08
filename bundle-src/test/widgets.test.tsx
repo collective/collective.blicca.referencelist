@@ -7,11 +7,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import config from '@plone/registry';
-import type { ComponentType } from 'react';
+import { useState, type ComponentType } from 'react';
 
 import install from '../src/index';
 import { REFERENCELIST_WIDGETS, ReferenceListSelectWidget, ReferencesWidget } from '../src/widgets';
-import { mergePicked, moveReference } from '../src/widgets/ReferencesWidget';
+import { pickedReferences } from '../src/widgets/ReferencesWidget';
 import { choicesWidgetOf, installUpstreamRegistry, UpstreamObjectBrowserWidget } from './upstream-registry';
 
 const upstream = installUpstreamRegistry(config as any);
@@ -42,17 +42,28 @@ function renderField(
   return render(<Widget {...props} />);
 }
 
-/** A picker stand-in: upstream's needs the edit route and throws in a harness. */
-function withPicker<T>(brains: Array<Record<string, unknown>>, body: () => T): T {
+/**
+ * A picker stand-in: upstream's needs the edit route and throws in a
+ * harness. It records the props of every mount and reports `brains` as the
+ * whole selection on a click, as both hosts' pickers do.
+ */
+function withPicker<T>(brains: Array<Record<string, unknown>>, body: (mounts: any[]) => T): T {
   const registry = upstream as any;
   const saved = registry.widgets.widget.object_browser;
-  registry.widgets.widget.object_browser = ({ mode, onChange }: any) => (
-    <button type="button" data-mode={mode} onClick={() => onChange(brains)}>
-      pick
-    </button>
-  );
+  const mounts: any[] = [];
+  registry.widgets.widget.object_browser = (props: any) => {
+    const [mounted] = useState(() => {
+      mounts.push(props);
+      return props;
+    });
+    return (
+      <button type="button" data-mode={mounted.mode} onClick={() => props.onChange(brains)}>
+        pick
+      </button>
+    );
+  };
   try {
-    return body();
+    return body(mounts);
   } finally {
     registry.widgets.widget.object_browser = saved;
   }
@@ -109,89 +120,82 @@ describe('referencelist_select', () => {
   });
 });
 
-describe('merging and moving (pure)', () => {
-  it('appends picked brains once, keyed by UID or @id', () => {
-    const merged = mergePicked([A as any], [A, B, { ...B, UID: undefined }, C, { title: 'no id' }]);
-    expect(merged.map((r) => r.title)).toEqual(['A', 'B', 'C']);
-    expect(merged[2]).toEqual({ '@id': C['@id'], UID: 'uc', '@type': 'Event', title: 'C' });
-    expect(mergePicked([A as any], 'nope')).toEqual([A]);
+describe('picked references (pure)', () => {
+  it('stores the reported selection in its order, once per item, as references', () => {
+    const picked = pickedReferences([A as any], [C, A, { ...C }, { title: 'no id' }]);
+    expect(picked.map((r) => r.title)).toEqual(['C', 'A']);
+    expect(picked[0]).toEqual({ '@id': C['@id'], UID: 'uc', '@type': 'Event', title: 'C' });
+    expect(pickedReferences([A as any], 'nope')).toEqual([A]);
   });
 
-  it('moves within bounds and leaves the list alone otherwise', () => {
-    const list = [A, B, C] as any[];
-    expect(moveReference(list, 0, 1).map((r) => r.title)).toEqual(['B', 'A', 'C']);
-    expect(moveReference(list, 2, 1).map((r) => r.title)).toEqual(['A', 'C', 'B']);
-    expect(moveReference(list, 0, -1)).toBe(list);
-    expect(moveReference(list, 2, 3)).toBe(list);
+  it('keeps what a stored reference holds and the picker does not report again', () => {
+    const stored = { ...A, description: 'kept' };
+    expect(pickedReferences([stored as any], [{ '@id': A['@id'], UID: 'ua', title: 'A2' }])).toEqual([
+      { ...stored, title: 'A2' },
+    ]);
   });
 });
 
 describe('referencelist_references', () => {
   const property = { title: 'References', widget: 'referencelist_references' };
 
-  it('lists the stored references in order, with type and controls', () => {
-    renderField(ReferencesWidget, property, { storedValue: [A, B] });
-    const rows = screen.getAllByRole('listitem');
-    expect(rows.map((row) => row.textContent)).toEqual(['ADocument↑↓✕', 'BNews Item↑↓✕']);
-    expect((screen.getByLabelText('Move “A” up') as HTMLButtonElement).disabled).toBe(true);
-    expect((screen.getByLabelText('Move “B” down') as HTMLButtonElement).disabled).toBe(true);
-    expect((screen.getByLabelText('Move “A” down') as HTMLButtonElement).disabled).toBe(false);
-  });
-
-  it('removes and reorders through onChange', () => {
-    const onChange = vi.fn();
-    renderField(ReferencesWidget, property, { storedValue: [A, B, C], onChange });
-    fireEvent.click(screen.getByLabelText('Move “C” up'));
-    expect(onChange).toHaveBeenLastCalledWith([A, C, B]);
-    fireEvent.click(screen.getByLabelText('Remove “A”'));
-    expect(onChange).toHaveBeenLastCalledWith([C, B]);
-    expect(screen.getAllByRole('listitem').map((row) => row.textContent)).toEqual([
-      'CEvent↑↓✕',
-      'BNews Item↑↓✕',
-    ]);
-  });
-
-  it('adds what the host picker reports, once, and stores the reference shape', () => {
-    withPicker([A, B, C], () => {
-      const onChange = vi.fn();
-      renderField(ReferencesWidget, property, { storedValue: [A], onChange });
-      expect(screen.queryByText('pick')).toBeNull();
-      fireEvent.click(screen.getByRole('button', { name: 'Add…' }));
-      const picker = screen.getByText('pick');
-      expect(picker.getAttribute('data-mode')).toBe('multiple');
-      fireEvent.click(picker);
-      expect(onChange).toHaveBeenCalledTimes(1);
-      expect(onChange).toHaveBeenLastCalledWith([
-        A,
-        B,
-        { '@id': C['@id'], UID: 'uc', '@type': 'Event', title: 'C' },
-      ]);
-      // Blicca reports the whole selection on every click: nothing doubles.
-      fireEvent.click(picker);
-      expect(onChange).toHaveBeenCalledTimes(1);
-      expect(screen.getAllByRole('listitem').length).toBe(3);
-      // The picker stays open for the next pick until Done.
-      fireEvent.click(screen.getByRole('button', { name: 'Done' }));
-      expect(screen.queryByText('pick')).toBeNull();
+  it('mounts the host picker on the stored references, in multiple mode', () => {
+    withPicker([], (mounts) => {
+      renderField(ReferencesWidget, property, { storedValue: [A, B] });
+      expect(screen.getByText('pick').getAttribute('data-mode')).toBe('multiple');
+      expect(mounts).toHaveLength(1);
+      expect(mounts[0].defaultValue).toEqual([A, B]);
+      expect(mounts[0].selectedItemAttrs).toContain('UID');
     });
   });
 
-  it('follows a stored value the host hands back', () => {
-    const { rerender } = renderField(ReferencesWidget, property, { storedValue: [A] });
-    expect(screen.getAllByRole('listitem').length).toBe(1);
-    rerender(<ReferencesWidget label="References" defaultValue={[A, B]} />);
-    expect(screen.getAllByRole('listitem').length).toBe(2);
+  it('replaces the list with what the picker reports, and only on a change', () => {
+    withPicker([C, A], (mounts) => {
+      const onChange = vi.fn();
+      renderField(ReferencesWidget, property, { storedValue: [A, B], onChange });
+      fireEvent.click(screen.getByText('pick'));
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenLastCalledWith([
+        { '@id': C['@id'], UID: 'uc', '@type': 'Event', title: 'C' },
+        A,
+      ]);
+      fireEvent.click(screen.getByText('pick'));
+      expect(onChange).toHaveBeenCalledTimes(1);
+      // The picker reported it: it already shows it, no remount.
+      expect(mounts).toHaveLength(1);
+    });
   });
 
-  it('says so when the host registers no picker', () => {
+  it('keeps the picker when the host hands back what the widget reported', () => {
+    withPicker([B], (mounts) => {
+      let stored: unknown = [A];
+      const { rerender } = renderField(ReferencesWidget, property, {
+        storedValue: stored,
+        onChange: (value) => (stored = value),
+      });
+      fireEvent.click(screen.getByText('pick'));
+      rerender(<ReferencesWidget label="References" defaultValue={stored} />);
+      expect(mounts).toHaveLength(1);
+    });
+  });
+
+  it('remounts the picker on a stored value it did not report', () => {
+    withPicker([], (mounts) => {
+      const { rerender } = renderField(ReferencesWidget, property, { storedValue: [A] });
+      rerender(<ReferencesWidget label="References" defaultValue={[A, B]} />);
+      expect(mounts).toHaveLength(2);
+      expect(mounts[1].defaultValue).toEqual([A, B]);
+    });
+  });
+
+  it('lists the references read-only when the host registers no picker', () => {
     const registry = upstream as any;
     const saved = registry.widgets.widget.object_browser;
     delete registry.widgets.widget.object_browser;
     try {
-      renderField(ReferencesWidget, property, { storedValue: [A] });
-      expect(screen.queryByRole('button', { name: 'Add…' })).toBeNull();
+      renderField(ReferencesWidget, property, { storedValue: [A, B] });
+      expect(screen.getAllByRole('listitem').map((row) => row.textContent)).toEqual(['A', 'B']);
       expect(screen.getByText('No content picker is registered in this editor.')).toBeTruthy();
-      expect(screen.getAllByRole('listitem').length).toBe(1);
     } finally {
       registry.widgets.widget.object_browser = saved;
     }

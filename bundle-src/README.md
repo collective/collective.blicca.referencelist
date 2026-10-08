@@ -33,9 +33,9 @@ and commit the result whenever `src/` changes.
   canvas notices.
 - `src/widgets/`: `referencelist_select` (a select over `choices`, since
   only the Blicca host registers a `choices` widget) and
-  `referencelist_references` (the picked items with move and remove
-  controls, and the host's own `object_browser` behind an Add disclosure,
-  mounted in multiple mode and merged into the list).
+  `referencelist_references` (the host's own `object_browser`, mounted in
+  multiple mode on the stored references; the selection it reports
+  replaces the list).
 - `src/styles.css`: the one stylesheet, scope-wrapped by the build.
 
 ## Why the tests have no facade stubs

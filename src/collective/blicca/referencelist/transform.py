@@ -25,6 +25,7 @@ from collective.blicca.referencelist.blocks import DERIVED_KEYS
 from collective.blicca.referencelist.blocks import REFERENCELIST_BLOCK_TYPE
 from collective.blicca.referencelist.interfaces import ICollectiveBliccaReferencelistLayer
 from collective.blicca.referencelist.references import resolve_references
+from collective.blicca.referencelist.references import with_uids
 
 
 logger = logging.getLogger(__name__)
@@ -44,11 +45,14 @@ class ReferenceListSerializerBase:
         for key in DERIVED_KEYS:
             value.pop(key, None)
         try:
-            items, missing = resolve_references(self.context, self.request, value.get("references"))
+            references = with_uids(self.context, value.get("references"))
+            items, missing = resolve_references(self.context, self.request, references)
         except Exception:
             # One broken reference list must not break the page's serialization.
             logger.exception("Could not resolve the references of a reference list")
             return value
+        if "references" in value:
+            value["references"] = references
         value["items"] = json_compatible(items)
         value["missing"] = list(missing)
         return value

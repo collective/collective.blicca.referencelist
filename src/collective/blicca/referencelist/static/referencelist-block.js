@@ -256,7 +256,6 @@ function ReferenceListSchema({
 }
 const labelClass = "w-fit cursor-default text-xs font-medium text-quanta-pigeon";
 const controlClass = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
-const buttonClass = "w-fit text-xs font-medium text-quanta-pigeon underline";
 function FieldShell({
   label,
   description,
@@ -303,60 +302,54 @@ function ReferenceListSelectWidget(props) {
     }
   );
 }
-const rowClass = "flex items-center gap-2 rounded-md border border-input bg-background px-2 py-1 text-sm text-quanta-iron";
-const iconButtonClass = "rounded px-1 text-xs text-quanta-pigeon hover:text-quanta-iron disabled:opacity-40";
-function mergePicked(current, picked) {
+function pickedReferences(current, picked) {
   if (!Array.isArray(picked)) return current;
-  const known = /* @__PURE__ */ new Set();
+  const stored = /* @__PURE__ */ new Map();
   for (const reference of current) {
-    known.add(referenceKey(reference));
-    known.add(reference["@id"]);
+    stored.set(referenceKey(reference), reference);
+    stored.set(reference["@id"], reference);
   }
-  const added = [];
+  const seen = /* @__PURE__ */ new Set();
+  const next = [];
   for (const brain of picked) {
-    const reference = referenceFrom(brain ?? {});
-    if (!reference) continue;
-    if (known.has(referenceKey(reference)) || known.has(reference["@id"])) continue;
-    known.add(referenceKey(reference));
-    known.add(reference["@id"]);
-    added.push(reference);
+    const fresh = referenceFrom(brain ?? {});
+    if (!fresh || seen.has(referenceKey(fresh))) continue;
+    seen.add(referenceKey(fresh));
+    const known = stored.get(referenceKey(fresh)) ?? stored.get(fresh["@id"]);
+    next.push(known ? { ...known, ...fresh } : fresh);
   }
-  return added.length ? [...current, ...added] : current;
-}
-function moveReference(current, from, to) {
-  if (to < 0 || to >= current.length || from === to) return current;
-  const next = [...current];
-  const [moved] = next.splice(from, 1);
-  next.splice(to, 0, moved);
   return next;
 }
 function ReferencesWidget(props) {
   const { label, description, className, onChange } = props;
   const incoming = storedReferences(props.value ?? props.defaultValue);
   const incomingKey = JSON.stringify(incoming);
-  const [references, setReferences] = useState(incoming);
-  const lastIncoming = useRef(incomingKey);
-  if (lastIncoming.current !== incomingKey) {
-    lastIncoming.current = incomingKey;
-    setReferences(incoming);
+  const [state, setState] = useState(() => ({
+    incoming: incomingKey,
+    references: incoming,
+    generation: 0
+  }));
+  if (state.incoming !== incomingKey) {
+    const own = JSON.stringify(state.references) === incomingKey;
+    setState({
+      incoming: incomingKey,
+      references: incoming,
+      generation: own ? state.generation : state.generation + 1
+    });
   }
-  const [browsing, setBrowsing] = useState(false);
-  const pickerId = useId();
-  const commit = useCallback(
-    (next) => {
-      setReferences(next);
+  const latest = useRef(state.references);
+  latest.current = state.references;
+  const handlePicked = useCallback(
+    (selected) => {
+      const next = pickedReferences(latest.current, selected);
+      if (JSON.stringify(next) === JSON.stringify(latest.current)) return;
+      latest.current = next;
+      setState((current) => ({ ...current, references: next }));
       onChange?.(next);
     },
     [onChange]
   );
   const Picker = config.getWidget("object_browser");
-  const handlePicked = useCallback(
-    (selected) => {
-      const next = mergePicked(references, selected);
-      if (next !== references) commit(next);
-    },
-    [commit, references]
-  );
   return /* @__PURE__ */ jsx(
     FieldShell,
     {
@@ -364,68 +357,20 @@ function ReferencesWidget(props) {
       label,
       description,
       className,
-      render: (controlId) => /* @__PURE__ */ jsxs(Fragment, { children: [
-        /* @__PURE__ */ jsx("ol", { id: controlId, className: "m-0 flex list-none flex-col gap-1 p-0", children: references.map((reference, index) => /* @__PURE__ */ jsxs("li", { className: rowClass, children: [
-          /* @__PURE__ */ jsxs("span", { className: "min-w-0 flex-1 truncate", title: reference["@id"], children: [
-            titleOf(reference),
-            typeof reference["@type"] === "string" ? /* @__PURE__ */ jsx("span", { className: "ml-1 text-xs text-quanta-pigeon", children: reference["@type"] }) : null
-          ] }),
-          /* @__PURE__ */ jsx(
-            "button",
-            {
-              type: "button",
-              className: iconButtonClass,
-              "aria-label": `Move “${titleOf(reference)}” up`,
-              disabled: index === 0,
-              onClick: () => commit(moveReference(references, index, index - 1)),
-              children: "↑"
-            }
-          ),
-          /* @__PURE__ */ jsx(
-            "button",
-            {
-              type: "button",
-              className: iconButtonClass,
-              "aria-label": `Move “${titleOf(reference)}” down`,
-              disabled: index === references.length - 1,
-              onClick: () => commit(moveReference(references, index, index + 1)),
-              children: "↓"
-            }
-          ),
-          /* @__PURE__ */ jsx(
-            "button",
-            {
-              type: "button",
-              className: iconButtonClass,
-              "aria-label": `Remove “${titleOf(reference)}”`,
-              onClick: () => commit(references.filter((_, at) => at !== index)),
-              children: "✕"
-            }
-          )
-        ] }, `${referenceKey(reference)}-${index}`)) }),
-        Picker ? /* @__PURE__ */ jsx(
-          "button",
-          {
-            type: "button",
-            "aria-expanded": browsing,
-            "aria-controls": pickerId,
-            onClick: () => setBrowsing((open) => !open),
-            className: buttonClass,
-            children: browsing ? "Done" : "Add…"
-          }
-        ) : /* @__PURE__ */ jsx("p", { className: "text-xs font-normal text-quanta-pigeon", children: "No content picker is registered in this editor." }),
-        Picker && browsing ? (
-          // Mounted only while open: Blicca's picker is a pattern island
-          // with a network round trip.
-          /* @__PURE__ */ jsx("div", { id: pickerId, children: /* @__PURE__ */ jsx(
-            Picker,
-            {
-              mode: "multiple",
-              widgetOptions: props.widgetOptions,
-              onChange: handlePicked
-            }
-          ) })
-        ) : null
+      render: (controlId) => Picker ? /* @__PURE__ */ jsx(
+        Picker,
+        {
+          id: controlId,
+          mode: "multiple",
+          defaultValue: state.references,
+          selectedItemAttrs: REFERENCE_ATTRS,
+          widgetOptions: props.widgetOptions,
+          onChange: handlePicked
+        },
+        state.generation
+      ) : /* @__PURE__ */ jsxs(Fragment, { children: [
+        /* @__PURE__ */ jsx("ol", { id: controlId, className: "m-0 list-inside p-0 text-sm text-quanta-iron", children: state.references.map((reference) => /* @__PURE__ */ jsx("li", { children: titleOf(reference) }, referenceKey(reference))) }),
+        /* @__PURE__ */ jsx("p", { className: "text-xs font-normal text-quanta-pigeon", children: "No content picker is registered in this editor." })
       ] })
     }
   );

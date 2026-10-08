@@ -1,0 +1,12 @@
+{
+  "name": "@plone-collective/aurora-referencelist-block-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser e2e checks for the Reference List block in the Aurora editor.",
+  "scripts": {
+    "e2e": "node references-picker.e2e.js"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.61.1"
+  }
+}

@@ -19,8 +19,10 @@ Aurora block package, `@plone-collective/aurora-referencelist-block`, see
 
 ## Features
 
-- **Hand-picked references.** Any number of items, added through the site's
-  own content browser, removed and reordered in the sidebar.
+- **Hand-picked references.** Any number of items, kept in the site's own
+  content browser: the picked items are always listed in the sidebar,
+  several are added in one visit to the browser, and an item is removed or
+  dragged to a new place right in that list.
 - **Always current.** Only the reference is stored. On every page load the
   referenced items are looked up in the catalog, so a renamed or moved item
   shows its current title and picture, and a deleted or unpublished one
@@ -78,7 +80,7 @@ sidebar. The canvas is a live preview; all editing happens in the sidebar.
 | Headline | Optional heading above the list |
 | Headline tag | `H2` or `H3`. Item titles are one level below a visible headline, else at that level |
 | Variation | `Default`, `Summary` or `Grid` |
-| References | The picked items, in order. **Add…** opens the content browser, every item has move and remove controls |
+| References | The picked items, in order, in the content browser's list. **Select** opens the browser: Shift-click or Ctrl-click picks several at once. Drag an item to reorder it, its × removes it |
 | Block width | The editor's width control |
 | Background | A background colour, if the site offers a palette |
 
@@ -88,6 +90,9 @@ Rules worth knowing:
   nothing is sorted.
 - An item the visitor may not see is skipped silently on the page. In the
   editor a reference whose target no longer exists is named in a notice.
+  The content browser cannot list it, so it leaves the block as soon as the
+  block's settings are opened, as it leaves a relation field in a classic
+  edit form.
 - The summary and grid variations show an item's picture when it has one
   (a lead image, or the image of an Image item). Items without a picture
   keep their place without one.
@@ -189,7 +194,9 @@ UID, type and a snapshot of its title. Nothing else is persisted.
 1. On every load, a `plone.restapi` block serialization transformer resolves
    the references in the catalog and injects `items`, the full JSON summary
    of every target the current user may see, in stored order, plus
-   `missing`, the references that resolved to nothing.
+   `missing`, the references that resolved to nothing. A reference stored
+   without a UID gets the one its `@id` names, since the content browser
+   tracks its selection by UID.
 2. On save, a matching deserialization transformer strips both keys again,
    so derived data is never written to the database.
 3. The public renderer hands `items` to the variation's list template,
@@ -230,8 +237,9 @@ entry point and resolves every other field to an upstream Aurora widget.
   `view` reads the `items` the server injects; without it the canvas shows
   the stored snapshots only.
 - The references widget mounts the host's own `object_browser` widget in
-  multiple mode. Aurora's can only be mounted inside the edit route, where
-  the block sidebar lives.
+  multiple mode, on the stored references, and stores the selection it
+  reports. Aurora's can only be mounted inside the edit route, where the
+  block sidebar lives.
 - **Bring your own styling.** The stylesheet is scoped to the Blicca roots
   and does not apply in an Aurora frontend.
 - The block has been verified against the registry the Aurora installers
@@ -255,6 +263,23 @@ pnpm typecheck
 ```bash
 uv run --extra test pytest
 ```
+
+`e2e/` drives the block in a running site's editor with playwright-core:
+picking six images in one visit to the content browser, removing one,
+dragging one to the top, adding one more, saving and reloading. It builds
+its fixture in the folder `AURORA_E2E_BASE` names and removes it again; the
+add-on must be installed there.
+
+```bash
+cd e2e
+pnpm install
+AURORA_E2E_BASE=http://localhost:8080/Plone AURORA_E2E_PAGE_TYPE=Article pnpm e2e
+```
+
+`AURORA_E2E_USER`, `AURORA_E2E_PASSWORD`, `AURORA_E2E_CHROMIUM` (a Chromium
+executable) and `AURORA_E2E_REROUTE` (`"<prefix>=><replacement>"`, a URL
+rewrite for the mockup bundle) are optional; the header of
+`e2e/references-picker.e2e.js` lists them.
 
 Every change to a GenericSetup profile XML file needs an upgrade step, even
 in an alpha release. Scaffold it with `plonecli add upgrade_step`.

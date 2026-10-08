@@ -16,8 +16,6 @@ export const labelClass = 'w-fit cursor-default text-xs font-medium text-quanta-
 export const controlClass =
   'w-full rounded-md border border-input bg-background px-3 py-2 text-sm';
 
-export const buttonClass = 'w-fit text-xs font-medium text-quanta-pigeon underline';
-
 export type FieldShellProps = {
   /** The schema title, arriving as `label`. */
   label?: string;
