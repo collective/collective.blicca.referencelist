@@ -36,7 +36,10 @@ export type ReferencesWidgetProps = FieldShellProps & {
   onChange?: (value: Reference[]) => void;
 };
 
-const rowClass = 'flex items-center gap-2 rounded-md border border-input bg-background px-2 py-1 text-sm';
+// An explicit text colour: the host's sidebar inherits white, and every
+// control there names its own.
+const rowClass =
+  'flex items-center gap-2 rounded-md border border-input bg-background px-2 py-1 text-sm text-quanta-iron';
 const iconButtonClass = 'rounded px-1 text-xs text-quanta-pigeon hover:text-quanta-iron disabled:opacity-40';
 
 /** Append the picked brains the list does not hold yet. */

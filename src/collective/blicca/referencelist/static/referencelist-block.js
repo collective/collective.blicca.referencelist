@@ -303,7 +303,7 @@ function ReferenceListSelectWidget(props) {
     }
   );
 }
-const rowClass = "flex items-center gap-2 rounded-md border border-input bg-background px-2 py-1 text-sm";
+const rowClass = "flex items-center gap-2 rounded-md border border-input bg-background px-2 py-1 text-sm text-quanta-iron";
 const iconButtonClass = "rounded px-1 text-xs text-quanta-pigeon hover:text-quanta-iron disabled:opacity-40";
 function mergePicked(current, picked) {
   if (!Array.isArray(picked)) return current;
