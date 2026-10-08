@@ -12,4 +12,13 @@
       layer="collective.blicca.referencelist.interfaces.ICollectiveBliccaReferencelistLayer"
       />
 
+  <browser:page
+      name="aurora-referencelist"
+      for="*"
+      class=".reference_list_view.ReferenceListView"
+      template="reference_list_view.pt"
+      permission="zope2.View"
+      layer="collective.blicca.referencelist.interfaces.ICollectiveBliccaReferencelistLayer"
+      />
+
 </configure>
