@@ -528,7 +528,7 @@ wheels = [
 
 [[package]]
 name = "collective-blicca-referencelist"
-version = "1.0.0a1"
+version = "1.0.0a3.dev0"
 source = { editable = "." }
 dependencies = [
     { name = "plone" },
@@ -2774,7 +2774,7 @@ wheels = [
 
 [[package]]
 name = "plone-blicca-auroraeditor"
-version = "1.0.0a3"
+version = "1.0.0a4"
 source = { editable = "../plone.blicca.auroraeditor" }
 dependencies = [
     { name = "plone-api" },

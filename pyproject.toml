@@ -25,10 +25,12 @@ keywords = ["Plone", "CMS"]
 
 dependencies = [
     "Plone>=6.0",
-    # The block imports plone.blicca.auroraeditor.rendering, which is versioned
-    # by this distribution and not by the block-api number the registry record
-    # declares. The two signals are independent; this add-on needs both.
-    "plone.blicca.auroraeditor>=1.0.0a3",
+    # 1.0.0a4 checks block add-ons by the names their bundles import and
+    # drops block_api from the registration record (ADR 0024); upgrade
+    # step 1002 deletes this add-on's own orphaned record. The block also
+    # imports plone.blicca.auroraeditor.rendering, versioned by this
+    # distribution, independently of the retired block-api number.
+    "plone.blicca.auroraeditor>=1.0.0a4",
     "plone.restapi",
 ]
 

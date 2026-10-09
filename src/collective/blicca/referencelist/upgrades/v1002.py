@@ -1,0 +1,25 @@
+"""Delete the block_api record."""
+
+import logging
+
+from plone.registry.interfaces import IRegistry
+from zope.component import getUtility
+
+
+logger = logging.getLogger(__name__)
+
+RECORD = (
+    "plone.blicca.auroraeditor.blockaddons/"
+    "collective.blicca.referencelist.referencelist.block_api"
+)
+
+
+def upgrade(context):
+    """Block add-ons are checked by the names their bundles import (ADR 0024): delete the reference list block's orphaned block_api record.
+
+    Upgrade from profile version 1001 to 1002.
+    """
+    logger.info("Running upgrade step: Delete the block_api record")
+    registry = getUtility(IRegistry)
+    if RECORD in registry.records:
+        del registry.records[RECORD]

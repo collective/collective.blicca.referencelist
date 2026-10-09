@@ -18,12 +18,6 @@
          the two spellings stay in lockstep. -->
     <value key="bundle">++plone++collective.blicca.referencelist/referencelist-block.js</value>
 
-    <!-- The floor the bundle needs, not the host's current version: a §2.4
-         mismatch is a fail-soft skip, so declaring too high strands the
-         block on the next host bump. Says nothing about the Python imports;
-         those are the `plone.blicca.auroraeditor` floor in pyproject.toml. -->
-    <value key="block_api">2.0</value>
-
     <!-- The scope-wrapped sheet that dresses both surfaces (§6). -->
     <value key="css">++plone++collective.blicca.referencelist/referencelist-block.css</value>
 

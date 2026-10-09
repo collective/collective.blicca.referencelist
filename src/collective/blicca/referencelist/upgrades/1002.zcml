@@ -1,0 +1,31 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="collective.blicca.referencelist">
+
+  <genericsetup:registerProfile
+      name="1002"
+      title="collective.blicca.referencelist: upgrade to 1002"
+      directory="1002"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:upgradeSteps
+      source="1001"
+      destination="1002"
+      profile="collective.blicca.referencelist:default">
+
+    <genericsetup:upgradeStep
+        title="Delete the block_api record"
+        description="Block add-ons are checked by the names their bundles import (ADR 0024): delete the reference list block&#39;s orphaned block_api record."
+        handler=".v1002.upgrade"
+        />
+
+    <genericsetup:upgradeDepends
+        title="Apply profile version 1002"
+        import_profile="collective.blicca.referencelist.upgrades:1002"
+        />
+
+  </genericsetup:upgradeSteps>
+
+</configure>
