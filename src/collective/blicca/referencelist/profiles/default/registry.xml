@@ -22,7 +22,7 @@
          mismatch is a fail-soft skip, so declaring too high strands the
          block on the next host bump. Says nothing about the Python imports;
          those are the `plone.blicca.auroraeditor` floor in pyproject.toml. -->
-    <value key="block_api">1.0</value>
+    <value key="block_api">2.0</value>
 
     <!-- The scope-wrapped sheet that dresses both surfaces (§6). -->
     <value key="css">++plone++collective.blicca.referencelist/referencelist-block.css</value>

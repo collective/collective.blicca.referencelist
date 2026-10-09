@@ -56,7 +56,7 @@ class TestSetup:
 
     def test_blockaddon_record_declares_the_api_floor(self):
         record = block_addon_records()[RECORD_NAME]
-        assert record.block_api == "1.0"
+        assert record.block_api == "2.0"
         assert blockaddons.is_compatible(record.block_api, blockaddons.host_block_api())
 
     def test_addon_loadable_by_the_editor(self):
