@@ -13,6 +13,7 @@ class HiddenProfiles:
         return [
             "collective.blicca.referencelist:uninstall",
             "collective.blicca.referencelist.upgrades:1001",
+            "collective.blicca.referencelist.upgrades:1002",
         ]
 
 

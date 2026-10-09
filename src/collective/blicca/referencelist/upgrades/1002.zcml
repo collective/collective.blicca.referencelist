@@ -21,11 +21,6 @@
         handler=".v1002.upgrade"
         />
 
-    <genericsetup:upgradeDepends
-        title="Apply profile version 1002"
-        import_profile="collective.blicca.referencelist.upgrades:1002"
-        />
-
   </genericsetup:upgradeSteps>
 
 </configure>

@@ -79,6 +79,39 @@ class TestSetup:
         assert "collective.blicca.referencelist:uninstall" in hidden
 
 
+class TestUpgradeProfilesHidden:
+    """Every upgrade profile stays out of the add-ons control panel.
+
+    `plonecli add upgrade_step` registers a new EXTENSION profile but does
+    not add it to `HiddenProfiles`, so checking every registered
+    `collective.blicca.referencelist.upgrades:*` profile, not just one by
+    name, means a later scaffolded step that forgets to hide itself fails
+    here instead of showing up in the control panel.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _setup(self, integration):
+        self.portal = integration["portal"]
+        self.setup_tool = api.portal.get_tool("portal_setup")
+
+    def test_every_upgrade_profile_is_non_installable(self):
+        from plone.base.interfaces import INonInstallable
+        from zope.component import getAllUtilitiesRegisteredFor
+
+        hidden = {
+            name
+            for utility in getAllUtilitiesRegisteredFor(INonInstallable)
+            for name in getattr(utility, "getNonInstallableProfiles", list)()
+        }
+        registered = {
+            info["id"]
+            for info in self.setup_tool.listProfileInfo()
+            if info["id"].startswith("collective.blicca.referencelist.upgrades:")
+        }
+        assert registered, "no upgrade profile is registered at all"
+        assert registered <= hidden
+
+
 class TestUninstall:
     @pytest.fixture(autouse=True)
     def _setup(self, integration):

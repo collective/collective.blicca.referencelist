@@ -50,7 +50,7 @@ Aurora block package, `@plone-collective/aurora-referencelist-block`, see
 ## Requirements
 
 - Plone 6.0 or later
-- `plone.blicca.auroraeditor` 1.0.0a3 or later
+- `plone.blicca.auroraeditor` 1.0.0a4 or later
 
 The JavaScript bundle is committed to the package. No Node is needed at
 install time.
