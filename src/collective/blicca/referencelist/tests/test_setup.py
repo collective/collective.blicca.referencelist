@@ -54,10 +54,10 @@ class TestSetup:
         assert record.weight == 100
         assert not getattr(record, "permission", "")
 
-    def test_blockaddon_record_declares_the_api_floor(self):
-        record = block_addon_records()[RECORD_NAME]
-        assert record.block_api == "2.0"
-        assert blockaddons.is_compatible(record.block_api, blockaddons.host_block_api())
+    def test_blockaddon_record_has_no_block_api(self):
+        """block_api is retired (ADR 0024): the record no longer carries it."""
+        registry = getUtility(IRegistry)
+        assert f"{blockaddons.BLOCKADDON_PREFIX}/{RECORD_NAME}.block_api" not in registry.records
 
     def test_addon_loadable_by_the_editor(self):
         statuses = {s.name: s for s in blockaddons.evaluate(self.portal)}
