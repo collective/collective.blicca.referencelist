@@ -12,6 +12,7 @@
  *  4. Drag the last item to the top: the block and the canvas follow.
  *  5. Add one more: it is appended, the dragged order holds.
  *  6. Save, reload: the list shows the stored six, in their order.
+ *  7. Replace the sidebar while its seeded references are still loading.
  *
  * Prerequisites: a running Plone site with collective.blicca.referencelist
  * installed, and the mockup bundle (pat-contentbrowser) reachable from the
@@ -257,6 +258,41 @@ async function selectBlock(page) {
     await page.waitForTimeout(1500);
     await selectBlock(page);
     await expectShown(page, [6, 1, 2, 4, 5, 3].map(title), 'reloaded');
+
+    // -- 7. unmount during the seeded selection's vocabulary request ---------
+    const heading = page.locator('[data-slate-editor] [data-block-id]').first();
+    await heading.click();
+    await page.locator(WIDGET).waitFor({ state: 'detached' });
+    const uidQuery = (request) => {
+      try {
+        const parameters = request.method() === 'POST'
+          ? new URLSearchParams(request.postData() || '') : new URL(request.url()).searchParams;
+        return JSON.parse(parameters.get('query') || '{}').criteria?.some((criterion) => criterion.i === 'UID');
+      } catch {
+        return false;
+      }
+    };
+    let release;
+    const gate = new Promise((resolve) => { release = resolve; });
+    const holdLookup = async (route) => {
+      if (!uidQuery(route.request())) return route.continue();
+      const response = await route.fetch();
+      await gate;
+      await route.fulfill({ response });
+    };
+    await page.route('**/*', holdLookup);
+    const pending = page.waitForRequest(uidQuery);
+    await page.locator(`[data-slate-editor] [data-block-id="${BLOCK_ID}"]`).click();
+    await pending;
+    await page.locator(`${WIDGET} .content-browser-wrapper`).waitFor();
+    await heading.click();
+    await page.locator(WIDGET).waitFor({ state: 'detached' });
+    const completed = page.waitForResponse((response) => uidQuery(response.request()));
+    release();
+    await completed;
+    await page.waitForTimeout(300);
+    await page.unroute('**/*', holdLookup);
+    console.log('ok: the sidebar was replaced during a pending reference lookup');
 
     if (pageErrors.length) fail(`uncaught page errors:\n${pageErrors.join('\n')}`);
     if (process.exitCode !== 1) console.log('PASS');
