@@ -1,6 +1,6 @@
 [project]
 name = "collective.blicca.referencelist"
-version = "1.0.0a3"
+version = "1.0.0a4.dev0"
 description = "Aurora Reference List block: picked content items rendered like a listing, with per-variation templates and item templates"
 readme = "README.md"
 requires-python = ">=3.10"
