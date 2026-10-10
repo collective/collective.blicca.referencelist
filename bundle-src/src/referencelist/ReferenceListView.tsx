@@ -8,13 +8,14 @@
  *
  * In edit mode every anchor loses its `href` and nothing else, so a click
  * selects the block instead of leaving the page, and the sheet never has to
- * select on `[href]`.
+ * select on `[href]`. With `linkItems` off there is no anchor to begin with.
  */
 import {
   descriptionOf,
   headlineOf,
   headlineTagOf,
   itemTitleTagOf,
+  linksItems,
   mergedItems,
   previewImage,
   referenceKey,
@@ -35,6 +36,7 @@ export function ReferenceListView({ data = {}, isEditMode }: ReferenceListViewPr
   const headline = headlineOf(data);
   const HeadlineTag = headlineTagOf(data);
   const ItemTitleTag = itemTitleTagOf(data);
+  const linked = linksItems(data);
   const { items } = mergedItems(data);
 
   return (
@@ -64,7 +66,11 @@ export function ReferenceListView({ data = {}, isEditMode }: ReferenceListViewPr
                 ) : null}
                 <div className="item-content">
                   <ItemTitleTag>
-                    <a {...(isEditMode ? {} : { href: item['@id'] })}>{titleOf(item)}</a>
+                    {linked ? (
+                      <a {...(isEditMode ? {} : { href: item['@id'] })}>{titleOf(item)}</a>
+                    ) : (
+                      titleOf(item)
+                    )}
                   </ItemTitleTag>
                   {description ? <p>{description}</p> : null}
                 </div>

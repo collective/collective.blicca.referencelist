@@ -45,6 +45,7 @@ describe('every field resolves to the widget it was designed for', () => {
     headline: 'default',
     headlineTag: 'ours',
     variation: 'ours',
+    linkItems: 'upstream',
     references: 'ours',
     blockWidth: 'upstream',
   };

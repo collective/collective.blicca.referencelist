@@ -3,7 +3,8 @@
   <!--! The same anatomy the React view emits. The picture is decorative:
         the title link beside it carries the item's name, so an alt repeating
         it would be read twice. The AVIF source is delivery, not anatomy; the
-        editor's renderer keeps picture > img. -->
+        editor's renderer keeps picture > img. The title sits flush in its
+        heading: with the link switched off it is the heading's own text. -->
   <tal:media tal:condition="view/shows_cards"
              tal:define="image view/image">
     <picture tal:condition="image">
@@ -22,18 +23,18 @@
     </picture>
   </tal:media>
   <div class="item-content">
-    <h2 tal:condition="python: view.title_tag == 'h2'">
-      <a tal:attributes="href view/url"
-         tal:content="view/title">title</a>
-    </h2>
-    <h3 tal:condition="python: view.title_tag == 'h3'">
-      <a tal:attributes="href view/url"
-         tal:content="view/title">title</a>
-    </h3>
-    <h4 tal:condition="python: view.title_tag == 'h4'">
-      <a tal:attributes="href view/url"
-         tal:content="view/title">title</a>
-    </h4>
+    <h2 tal:condition="python: view.title_tag == 'h2'"><a
+        tal:attributes="href view/url"
+        tal:omit-tag="not:view/linked"
+        tal:content="view/title">title</a></h2>
+    <h3 tal:condition="python: view.title_tag == 'h3'"><a
+        tal:attributes="href view/url"
+        tal:omit-tag="not:view/linked"
+        tal:content="view/title">title</a></h3>
+    <h4 tal:condition="python: view.title_tag == 'h4'"><a
+        tal:attributes="href view/url"
+        tal:omit-tag="not:view/linked"
+        tal:content="view/title">title</a></h4>
     <p tal:condition="view/description"
        tal:content="view/description">description</p>
   </div>

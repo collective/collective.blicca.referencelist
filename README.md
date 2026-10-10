@@ -80,6 +80,7 @@ sidebar. The canvas is a live preview; all editing happens in the sidebar.
 | Headline | Optional heading above the list |
 | Headline tag | `H2` or `H3`. Item titles are one level below a visible headline, else at that level |
 | Variation | `Default`, `Summary` or `Grid` |
+| Link items | On by default: each item title links to the item. Off, the titles are plain text |
 | References | The picked items, in order, in the content browser's list. **Select** opens the browser: Shift-click or Ctrl-click picks several at once. Drag an item to reorder it, its × removes it |
 | Block width | The editor's width control |
 | Background | A background colour, if the site offers a palette |
@@ -97,6 +98,9 @@ Rules worth knowing:
   (a lead image, or the image of an Image item). Items without a picture
   keep their place without one.
 - An empty list renders its headline and nothing else on the page.
+- A block saved before **Link items** existed links its items. Its
+  checkbox shows that with `plone.blicca.auroraeditor` later than 1.0.0a4;
+  older versions show it unchecked until the author sets it.
 
 ## Rendered markup
 
@@ -111,7 +115,7 @@ Rules worth knowing:
              alt="" loading="lazy" decoding="async">
       </picture>
       <div class="item-content">
-        <h3><a href="…">Title</a></h3>              <!-- h2, h3 or h4 -->
+        <h3><a href="…">Title</a></h3>              <!-- h2, h3 or h4; no <a> with Link items off -->
         <p>Description</p>                          <!-- only with a description -->
       </div>
     </article>
@@ -221,15 +225,18 @@ title, on every variation.
        </picture>
      </tal:media>
      <div class="item-content">
-       <h2 tal:condition="python: view.title_tag == 'h2'">
-         <a tal:attributes="href view/url" tal:content="view/title">title</a>
-       </h2>
-       <h3 tal:condition="python: view.title_tag == 'h3'">
-         <a tal:attributes="href view/url" tal:content="view/title">title</a>
-       </h3>
-       <h4 tal:condition="python: view.title_tag == 'h4'">
-         <a tal:attributes="href view/url" tal:content="view/title">title</a>
-       </h4>
+       <h2 tal:condition="python: view.title_tag == 'h2'"><a
+           tal:attributes="href view/url"
+           tal:omit-tag="not:view/linked"
+           tal:content="view/title">title</a></h2>
+       <h3 tal:condition="python: view.title_tag == 'h3'"><a
+           tal:attributes="href view/url"
+           tal:omit-tag="not:view/linked"
+           tal:content="view/title">title</a></h3>
+       <h4 tal:condition="python: view.title_tag == 'h4'"><a
+           tal:attributes="href view/url"
+           tal:omit-tag="not:view/linked"
+           tal:content="view/title">title</a></h4>
        <p class="event-location"
           tal:condition="view/location"
           tal:content="view/location">location</p>
@@ -249,7 +256,8 @@ What `BaseReferenceListItemView` gives a template:
 | `title_tag` | The heading level of the item title: `h2`, `h3` or `h4` |
 | `position`, `total` | The item's place in the list (0-based) and the number of items |
 | `portal_type` | The item's content type |
-| `url` | The item's link, `None` when the target must not be linked |
+| `linked` | False when the block's **Link items** is off |
+| `url` | The item's link, `None` when the target must not be linked or `linked` is false |
 | `title`, `description` | The item's title (its id when it has none) and description |
 | `shows_cards` | True on the `summary` and `grid` variations |
 | `css_class` | `item`, plus `summary` when `shows_cards` |
@@ -264,6 +272,9 @@ Rules worth knowing:
   Dates are ISO 8601 strings.
 - `tal:attributes` leaves out an attribute whose value is `None`, so a
   title link to a target that must not be linked renders without `href`.
+- `tal:omit-tag="not:view/linked"` drops the title's anchor when the block
+  does not link its items. Keep the anchor flush in its heading, as the
+  stock template does, so the bare title carries no stray whitespace.
 - `index` is the view's own template. Do not use the name for anything
   else.
 
@@ -281,10 +292,11 @@ A list template emits its own wrapper and inserts `rendered_items` with
 
 ## How it works
 
-The block stores its headline, headline tag, variation and the list of
-references. A reference is the picked item's `@id` (which plone.restapi
-rewrites to `../resolveuid/<UID>` on save and back to a URL on read), its
-UID, type and a snapshot of its title. Nothing else is persisted.
+The block stores its headline, headline tag, variation, whether item titles
+link, and the list of references. A reference is the picked item's `@id`
+(which plone.restapi rewrites to `../resolveuid/<UID>` on save and back to a
+URL on read), its UID, type and a snapshot of its title. Nothing else is
+persisted.
 
 1. On every load, a `plone.restapi` block serialization transformer resolves
    the references in the catalog and injects `items`, the full JSON summary
@@ -331,6 +343,10 @@ entry point and resolves every other field to an upstream Aurora widget.
 - **The Python package must still be installed on the backend.** The React
   `view` reads the `items` the server injects; without it the canvas shows
   the stored snapshots only.
+- **Link items** is a plain `boolean` field, drawn by the host's checkbox
+  widget. Aurora's own, Quanta's `Checkbox`, does not take the label and
+  stored value the block sidebar passes yet, so there it shows unlabelled
+  and unchecked.
 - The references widget mounts the host's own `object_browser` widget in
   multiple mode, on the stored references, and stores the selection it
   reports. Aurora's can only be mounted inside the edit route, where the

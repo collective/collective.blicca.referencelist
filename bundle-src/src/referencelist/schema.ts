@@ -58,7 +58,7 @@ export function ReferenceListSchema({
       {
         id: 'default',
         title: 'Default',
-        fields: ['headline', 'headlineTag', 'variation', 'references'],
+        fields: ['headline', 'headlineTag', 'variation', 'linkItems', 'references'],
       },
       {
         id: 'styling',
@@ -79,6 +79,13 @@ export function ReferenceListSchema({
         widget: 'referencelist_select',
         choices: VARIATION_CHOICES,
         default: 'default',
+      },
+      linkItems: {
+        title: 'Link items',
+        description: 'Make each item title a link to the item.',
+        type: 'boolean',
+        // Not a storage guarantee: both renderers read an absent value as on.
+        default: true,
       },
       references: {
         title: 'References',

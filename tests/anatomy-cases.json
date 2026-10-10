@@ -35,6 +35,15 @@
       "html": "<div class=\"referencelist variation-default\"><h3 class=\"headline\">Related</h3><div class=\"referencelist-items\"><article class=\"item\"><div class=\"item-content\"><h4><a>A page</a></h4></div></article></div></div>"
     },
     {
+      "name": "unlinked",
+      "note": "Link items switched off: each title is its heading's plain text, with no anchor around it.",
+      "data": {
+        "linkItems": false,
+        "items": [{"@id": "http://nohost/plone/page", "@type": "Document", "title": "A page", "description": "Page description"}]
+      },
+      "html": "<div class=\"referencelist variation-default\"><div class=\"referencelist-items\"><article class=\"item\"><div class=\"item-content\"><h2>A page</h2><p>Page description</p></div></article></div></div>"
+    },
+    {
       "name": "summary-cards",
       "note": "The summary variation: a picture over each card that has one, the card without a picture keeps its shape.",
       "data": {

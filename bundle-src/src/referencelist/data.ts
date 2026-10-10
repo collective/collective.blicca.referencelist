@@ -27,6 +27,7 @@ export type ReferenceListData = {
   headline?: unknown;
   headlineTag?: unknown;
   variation?: unknown;
+  linkItems?: unknown;
   references?: unknown;
   items?: unknown;
   missing?: unknown;
@@ -79,6 +80,11 @@ export function itemTitleTagOf(data: ReferenceListData = {}): HeadingTag {
   const tag = headlineTagOf(data);
   if (!headlineOf(data)) return tag;
   return tag === 'h2' ? 'h3' : 'h4';
+}
+
+/** Item titles link to their items unless the author switched it off. */
+export function linksItems(data: ReferenceListData = {}): boolean {
+  return data.linkItems !== false;
 }
 
 function isReference(value: unknown): value is Reference {

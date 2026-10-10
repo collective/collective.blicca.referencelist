@@ -186,6 +186,18 @@ class TestAnatomy(RenderTestCase):
 
 
 class TestLinkPolicy(RenderTestCase):
+    def test_titles_link_to_their_items_by_default(self):
+        markup = self.render(references=self.refs(self.page))
+        assert '<a href="/plone/page">A page</a>' in markup
+        markup = self.render(linkItems=True, references=self.refs(self.page))
+        assert '<a href="/plone/page">A page</a>' in markup
+
+    def test_switched_off_the_titles_are_plain_text(self):
+        markup = self.render(linkItems=False, references=self.refs(self.page, self.news))
+        assert not re.search(r"<a\b", markup)
+        assert "<h2>A page</h2>" in markup
+        assert "<h2>The scoop</h2>" in markup
+
     def test_an_absolute_url_becomes_a_site_relative_path(self):
         markup = self.render(references=self.refs(self.page))
         assert 'href="/plone/page"' in markup
