@@ -52,6 +52,11 @@ def item_title_tag_of(data):
     return "h3" if tag == "h2" else "h4"
 
 
+def links_items(data):
+    """Item titles link to their items unless the author switched it off."""
+    return (data or {}).get("linkItems") is not False
+
+
 def list_view_names(variation):
     """The list template lookup chain, most specific first."""
     return [f"aurora-referencelist-{variation}", "aurora-referencelist"]

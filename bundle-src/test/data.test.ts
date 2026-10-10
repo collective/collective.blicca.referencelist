@@ -5,6 +5,7 @@ import {
   headlineOf,
   headlineTagOf,
   itemTitleTagOf,
+  linksItems,
   mergedItems,
   previewImage,
   referenceFrom,
@@ -40,6 +41,14 @@ describe('variation and headline', () => {
     expect(itemTitleTagOf({ headlineTag: 'h3' })).toBe('h3');
     expect(itemTitleTagOf({ headline: 'x' })).toBe('h3');
     expect(itemTitleTagOf({ headline: 'x', headlineTag: 'h3' })).toBe('h4');
+  });
+});
+
+describe('linking', () => {
+  it('links item titles unless switched off', () => {
+    expect(linksItems({})).toBe(true);
+    expect(linksItems({ linkItems: true })).toBe(true);
+    expect(linksItems({ linkItems: false })).toBe(false);
   });
 });
 

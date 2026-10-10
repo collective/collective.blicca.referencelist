@@ -28,6 +28,7 @@ from collective.blicca.referencelist.blocks import headline_of
 from collective.blicca.referencelist.blocks import headline_tag_of
 from collective.blicca.referencelist.blocks import item_title_tag_of
 from collective.blicca.referencelist.blocks import item_view_names
+from collective.blicca.referencelist.blocks import links_items
 from collective.blicca.referencelist.blocks import variation_of
 from collective.blicca.referencelist.picture import responsive_image
 
@@ -123,8 +124,15 @@ class BaseReferenceListItemView(BrowserView):
         return "item summary" if self.shows_cards else "item"
 
     @property
+    def linked(self):
+        """Whether the block links item titles to their items."""
+        return links_items(self.data)
+
+    @property
     def url(self):
         """The card's link, or ``None`` when the target must not be linked."""
+        if not self.linked:
+            return None
         return link_href((self.item or {}).get("@id"))
 
     @property

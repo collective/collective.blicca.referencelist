@@ -14,7 +14,13 @@ describe('the sidebar schema', () => {
 
   it('offers the listing fields with references in place of a query', () => {
     expect(schema.fieldsets.map((fieldset) => fieldset.id)).toEqual(['default', 'styling']);
-    expect(schema.fieldsets[0].fields).toEqual(['headline', 'headlineTag', 'variation', 'references']);
+    expect(schema.fieldsets[0].fields).toEqual([
+      'headline',
+      'headlineTag',
+      'variation',
+      'linkItems',
+      'references',
+    ]);
     expect(schema.fieldsets[1].fields).toEqual(['blockWidth']);
   });
 
@@ -48,6 +54,13 @@ describe('the sidebar schema', () => {
     ]);
     expect(variation.default).toBe('default');
     expect((schema.properties.headlineTag as any).default).toBe('h2');
+  });
+
+  it("switches the links through the host's boolean widget, on by default", () => {
+    const linkItems = schema.properties.linkItems as any;
+    expect(linkItems.type).toBe('boolean');
+    expect(linkItems.widget).toBeUndefined();
+    expect(linkItems.default).toBe(true);
   });
 
   it('edits the references through its own widget', () => {

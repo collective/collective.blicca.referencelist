@@ -54,6 +54,13 @@ describe('the view matches the cross-renderer skeleton', () => {
     expect(container.querySelectorAll('a').length).toBe(2);
   });
 
+  it('renders no anchor in edit mode either when items are not linked', () => {
+    const unlinked = FIXTURE.cases.find((c) => c.name === 'unlinked')!;
+    const { container } = render(<ReferenceListView data={unlinked.data as any} isEditMode />);
+    expect(skeleton(container.innerHTML)).toBe(skeleton(unlinked.html));
+    expect(container.querySelector('a')).toBeNull();
+  });
+
   it('links each item to its @id on the public rendering', () => {
     const stack = FIXTURE.cases.find((c) => c.name === 'default-stack')!;
     const { container } = render(<ReferenceListView data={stack.data as any} />);
