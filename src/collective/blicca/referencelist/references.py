@@ -21,7 +21,7 @@ def stored_references(value):
 
     A bare string is read as an ``@id``; anything else is dropped.
     """
-    if not isinstance(value, (list, tuple)):
+    if not isinstance(value, list | tuple):
         return []
     references = []
     for entry in value:
