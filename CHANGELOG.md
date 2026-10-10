@@ -5,6 +5,9 @@
 - Add a **Link items** switch, on by default: off, the item titles render
   as plain text instead of links. Blocks saved before it keep their links.
 
+- The picker e2e also swaps the sidebar while the picked references are
+  still loading. pre-commit leaves build output and scaffold metadata alone.
+
 
 ## 1.0.0a3 (2026-10-10)
 
