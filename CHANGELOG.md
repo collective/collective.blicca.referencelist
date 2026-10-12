@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0a4 (unreleased)
+## 1.0.0a4 (2026-10-12)
 
 - Add a **Link items** switch, on by default: off, the item titles render
   as plain text instead of links. Blocks saved before it keep their links.
