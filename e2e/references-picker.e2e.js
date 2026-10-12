@@ -30,54 +30,17 @@
  * Run: pnpm e2e   (after `pnpm install` in this directory)
  */
 const { chromium } = require('playwright-core');
-
-const BASE = process.env.AURORA_E2E_BASE || 'http://127.0.0.1:8099/Plone15';
-const USER = process.env.AURORA_E2E_USER || 'admin';
-const PASSWORD = process.env.AURORA_E2E_PASSWORD || 'admin';
-const EXECUTABLE = process.env.AURORA_E2E_CHROMIUM;
-const PAGE_TYPE = process.env.AURORA_E2E_PAGE_TYPE || 'Document';
+const { BASE, USER, PASSWORD, EXECUTABLE, PAGE_TYPE, PNG_B64, api, fail } = require('./support');
 
 const FOLDER_ID = 'referencelist-e2e-picker';
 const PAGE_ID = 'page';
 const BLOCK_ID = 'references';
 const IMAGES = [1, 2, 3, 4, 5, 6].map((n) => ({ id: `image-${n}`, title: `E2E image ${n}` }));
-// 1x1 transparent PNG
-const PNG_B64 =
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP8//8/AwAI/AL+p5qgoAAAAABJRU5ErkJggg==';
-const AUTH = 'Basic ' + Buffer.from(`${USER}:${PASSWORD}`).toString('base64');
-
-async function api(method, path, body, retried) {
-  const response = await fetch(`${BASE}${path}`, {
-    method,
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: AUTH,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  if (response.status === 423 && method === 'DELETE' && !retried) {
-    // An edit lock outlives a closed browser: steal it, then retry once.
-    await api('DELETE', `${path}/@lock`, { force: true });
-    return api(method, path, body, true);
-  }
-  if (!response.ok && response.status !== 404) {
-    throw new Error(`${method} ${path} -> ${response.status}`);
-  }
-  return response.status === 204 || response.status === 404
-    ? undefined
-    : await response.json();
-}
 
 /** The page first: its edit lock would keep the folder. */
 async function cleanup() {
   await api('DELETE', `/${FOLDER_ID}/${PAGE_ID}`);
   await api('DELETE', `/${FOLDER_ID}`);
-}
-
-function fail(message) {
-  console.error(`FAIL: ${message}`);
-  process.exitCode = 1;
 }
 
 function expectList(actual, expected, what) {

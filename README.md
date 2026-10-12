@@ -80,7 +80,7 @@ sidebar. The canvas is a live preview; all editing happens in the sidebar.
 | Headline | Optional heading above the list |
 | Headline tag | `H2` or `H3`. Item titles are one level below a visible headline, else at that level |
 | Variation | `Default`, `Summary` or `Grid` |
-| Link items | On by default: each item title links to the item. Off, the titles are plain text |
+| Link items | On by default: each card links to its item, picture and description included. Off, the titles are plain text |
 | References | The picked items, in order, in the content browser's list. **Select** opens the browser: Shift-click or Ctrl-click picks several at once. Drag an item to reorder it, its × removes it |
 | Block width | The editor's width control |
 | Background | A background colour, if the site offers a palette |
@@ -129,6 +129,9 @@ Rules worth knowing:
   them out in columns with a container query on the block's own width.
 - The picture is decorative (`alt=""`): the title link beside it carries the
   item's name.
+- The stylesheet stretches the title link over its card, so a click on the
+  picture or the description follows it too. The link's name stays the
+  title.
 - Block width and background classes are added by the host on a wrapper
   around this markup, as for every Aurora block.
 
@@ -275,6 +278,9 @@ Rules worth knowing:
 - `tal:omit-tag="not:view/linked"` drops the title's anchor when the block
   does not link its items. Keep the anchor flush in its heading, as the
   stock template does, so the bare title carries no stray whitespace.
+- The anchor directly inside the card's `h2`, `h3` or `h4` covers the whole
+  card. Another link on the card needs `position: relative; z-index: 1` to
+  stay clickable above it.
 - `index` is the view's own template. Do not use the name for anything
   else.
 
@@ -375,10 +381,11 @@ pnpm typecheck
 uv run --extra test pytest
 ```
 
-`e2e/` drives the block in a running site's editor with playwright-core:
-picking six images in one visit to the content browser, removing one,
-dragging one to the top, adding one more, saving and reloading. It builds
-its fixture in the folder `AURORA_E2E_BASE` names and removes it again; the
+`e2e/` drives the block in a running site with playwright-core: in the
+editor, picking six images in one visit to the content browser, removing
+one, dragging one to the top, adding one more, saving and reloading; on the
+page, clicking a card's picture and description. Each script builds its
+fixture in the folder `AURORA_E2E_BASE` names and removes it again; the
 add-on must be installed there.
 
 ```bash
