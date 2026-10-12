@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0a6 (unreleased)
+
+
+- Nothing changed yet.
+
+
 ## 1.0.0a5 (2026-10-12)
 
 - With **Link items** on, the whole card links to its item: a click on the
