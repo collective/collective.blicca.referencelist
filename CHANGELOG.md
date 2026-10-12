@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0a5 (unreleased)
+## 1.0.0a5 (2026-10-12)
 
 - With **Link items** on, the whole card links to its item: a click on the
   picture or the description follows the title link. The link's name stays
