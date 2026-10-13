@@ -1,4 +1,4 @@
-# `@plone-collective/aurora-referencelist-block`
+# `@plone-collective/plone-referencelist-block`
 
 The Reference List block's Aurora half: a real npm package (the editor half
 belongs to the Aurora ecosystem) *and* the source for the bundle committed

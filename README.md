@@ -14,7 +14,7 @@ Typical uses:
 
 The block needs [plone.blicca.auroraeditor](https://github.com/derico-de/plone.blicca.auroraeditor),
 which brings the Aurora editor to Blicca. Its editor half is also a plain
-Aurora block package, `@plone-collective/aurora-referencelist-block`, see
+Aurora block package, `@plone-collective/plone-referencelist-block`, see
 [Using the block in Aurora](#using-the-block-in-aurora).
 
 ## Features
@@ -342,7 +342,7 @@ blocks view, so a theme that wants different cards registers a template
 ## Using the block in Aurora
 
 The editor half lives in `bundle-src/` as the npm package
-`@plone-collective/aurora-referencelist-block` (not yet published). It
+`@plone-collective/plone-referencelist-block` (not yet published). It
 registers the block and its two widgets through the usual `install(config)`
 entry point and resolves every other field to an upstream Aurora widget.
 

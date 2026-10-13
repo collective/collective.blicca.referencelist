@@ -3,7 +3,7 @@
 ## 1.0.0a6 (unreleased)
 
 
-- Nothing changed yet.
+- Rename the Aurora npm package to `@plone-collective/plone-referencelist-block`.
 
 
 ## 1.0.0a5 (2026-10-12)

@@ -1,5 +1,5 @@
 {
-  "name": "@plone-collective/aurora-referencelist-block",
+  "name": "@plone-collective/plone-referencelist-block",
   "version": "1.0.0-alpha.1",
   "description": "Aurora reference list block: picked content items rendered like a listing, as a stack, summary cards or a grid",
   "type": "module",
