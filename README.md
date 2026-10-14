@@ -13,8 +13,8 @@ Typical uses:
 - a grid of teasers to a handful of pages, without one teaser block each.
 
 The block needs [plone.blicca.auroraeditor](https://github.com/derico-de/plone.blicca.auroraeditor),
-which brings the Aurora editor to Blicca. Its editor half is also a plain
-Aurora block package, `@plone-collective/plone-referencelist-block`, see
+which brings the Aurora editor to Blicca. Its editor half is also a plain Plone
+block package for Aurora, `@plone-collective/aurora-referencelist-block`, see
 [Using the block in Aurora](#using-the-block-in-aurora).
 
 ## Features
@@ -136,7 +136,7 @@ Rules worth knowing:
   picture or the description follows it too. The link's name stays the
   title.
 - Block width and background classes are added by the host on a wrapper
-  around this markup, as for every Aurora block.
+  around this markup, as for every Plone block.
 
 ## Templates
 
@@ -345,7 +345,7 @@ blocks view, so a theme that wants different cards registers a template
 ## Using the block in Aurora
 
 The editor half lives in `bundle-src/` as the npm package
-`@plone-collective/plone-referencelist-block` (not yet published). It
+`@plone-collective/aurora-referencelist-block` (not yet published). It
 registers the block and its two widgets through the usual `install(config)`
 entry point and resolves every other field to an upstream Aurora widget.
 

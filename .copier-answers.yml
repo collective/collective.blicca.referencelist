@@ -6,7 +6,7 @@ author_email: md@derico.de
 author_name: Maik Derstappen
 github_organization: collective
 is_headless: false
-package_description: 'Aurora Reference List block: picked content items rendered like
+package_description: 'Plone Reference List block for the Aurora editor: picked content items rendered like
     a listing, with per-variation templates and item templates'
 package_name: collective.blicca.referencelist
 package_title: Collective Blicca Referencelist

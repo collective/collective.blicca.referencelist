@@ -12,7 +12,7 @@
   <genericsetup:registerProfile
       name="default"
       title="Collective Blicca Referencelist"
-      description="Aurora Reference List block: picked content items rendered like a listing, with per-variation templates and item templates"
+      description="Plone Reference List block for the Aurora editor: picked content items rendered like a listing, with per-variation templates and item templates"
       provides="Products.GenericSetup.interfaces.EXTENSION"
       directory="profiles/default"
       />

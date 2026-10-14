@@ -1,5 +1,5 @@
 {
-  "name": "@plone-collective/plone-referencelist-block-e2e",
+  "name": "@plone-collective/aurora-referencelist-block-e2e",
   "version": "1.0.0",
   "private": true,
   "description": "Browser e2e checks for the Reference List block in the Aurora editor.",

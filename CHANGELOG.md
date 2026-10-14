@@ -3,7 +3,8 @@
 ## 1.0.0a6 (unreleased)
 
 
-- Rename the Aurora npm package to `@plone-collective/plone-referencelist-block`.
+- The descriptions call the Reference List block a Plone block, not an Aurora
+  block.
 - Link images and files to their `/view` page instead of the bare file. The
   site setting *Types which use the view action in listing views* names the
   types. Each item summary has a new `use_view_action_in_listings` key.

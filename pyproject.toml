@@ -1,7 +1,7 @@
 [project]
 name = "collective.blicca.referencelist"
 version = "1.0.0a6.dev0"
-description = "Aurora Reference List block: picked content items rendered like a listing, with per-variation templates and item templates"
+description = "Plone Reference List block for the Aurora editor: picked content items rendered like a listing, with per-variation templates and item templates"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "GPL-2.0-or-later"}
@@ -72,7 +72,7 @@ constraint-dependencies = ["Products.CMFPlone==6.2.2"]
 [tool.plone.backend_addon.settings]
 package_name = "collective.blicca.referencelist"
 package_title = "Collective Blicca Referencelist"
-package_description = "Aurora Reference List block: picked content items rendered like a listing, with per-variation templates and item templates"
+package_description = "Plone Reference List block for the Aurora editor: picked content items rendered like a listing, with per-variation templates and item templates"
 package_folder = "collective/blicca/referencelist"
 plone_version = "6.0"
 is_headless = false
