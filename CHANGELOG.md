@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0a6 (unreleased)
+## 1.0.0a6 (2026-10-14)
 
 
 - The descriptions call the Reference List block a Plone block, not an Aurora
