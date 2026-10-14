@@ -24,7 +24,7 @@ async function cleanup() {
 function block(id, headline, reference, extra = {}) {
   return {
     type: 'ploneBlock',
-    '@type': 'referencelist',
+    '@type': 'plone-collective.referencelist',
     id,
     headline,
     variation: 'summary',

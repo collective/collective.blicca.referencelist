@@ -71,7 +71,7 @@ class RenderTestCase:
 
 class TestDispatch(RenderTestCase):
     def test_view_name_is_the_dispatch_convention(self):
-        assert VIEW_NAME == "aurora-block-referencelist"
+        assert VIEW_NAME == "aurora-block-plone-collective.referencelist"
         view = getMultiAdapter((self.doc, self.request), name=VIEW_NAME)
         assert view.__name__ == VIEW_NAME
 

@@ -121,7 +121,7 @@ async function selectBlock(page) {
           { type: 'title', children: [{ text: 'Reference list e2e page' }] },
           {
             type: 'ploneBlock',
-            '@type': 'referencelist',
+            '@type': 'plone-collective.referencelist',
             id: BLOCK_ID,
             variation: 'grid',
             children: [{ text: '' }],

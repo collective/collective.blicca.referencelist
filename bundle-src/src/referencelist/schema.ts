@@ -11,7 +11,7 @@
  */
 import { getStyleFieldDefinitionsFromRegistry } from '@plone/helpers';
 
-export const REFERENCELIST_BLOCK_TYPE = 'referencelist';
+export const REFERENCELIST_BLOCK_TYPE = 'plone-collective.referencelist';
 
 const BACKGROUND_FIELD_NAME = 'backgroundColor';
 

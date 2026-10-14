@@ -19,7 +19,7 @@ class TestPromisedImports:
             assert getattr(rendering, name) is not None
 
     def test_the_vocabulary(self):
-        assert rendering.REFERENCELIST_BLOCK_TYPE == "referencelist"
+        assert rendering.REFERENCELIST_BLOCK_TYPE == "plone-collective.referencelist"
         assert rendering.VARIATIONS == ("default", "summary", "grid")
         assert rendering.DEFAULT_VARIATION == "default"
         assert rendering.CARD_VARIATIONS == ("summary", "grid")

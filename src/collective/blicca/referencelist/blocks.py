@@ -1,14 +1,17 @@
 """The Reference List block's identity and vocabulary, spelled once.
 
-``referencelist`` is the block's ``@type``. The serialization transformers,
-the renderer view name (``aurora-block-<REFERENCELIST_BLOCK_TYPE>``) and the
-registry record all derive their spelling from here.
+``plone-collective.referencelist`` is the block's ``@type``. It takes its
+namespace from the npm package ``@plone-collective/aurora-referencelist-block``,
+as ADR 0025 in plone.blicca.auroraeditor asks. The serialization
+transformers, the renderer view name
+(``aurora-block-<REFERENCELIST_BLOCK_TYPE>``) and the registry record all
+derive their spelling from here.
 
 The variations mirror the listing block's: a plain stack, summary cards with
 the picture over the text, and the same cards laid out in a grid.
 """
 
-REFERENCELIST_BLOCK_TYPE = "referencelist"
+REFERENCELIST_BLOCK_TYPE = "plone-collective.referencelist"
 
 #: The variations the block offers, in sidebar order.
 VARIATIONS = ("default", "summary", "grid")

@@ -1,4 +1,4 @@
-"""The Reference List block's public renderer (``@@aurora-block-referencelist``).
+"""The Reference List block's public renderer (``@@aurora-block-plone-collective.referencelist``).
 
 The dispatcher of the block add-on contract (§5.1) stamps ``self.data`` and
 ``self.block_type`` and calls the view. The view resolves the referenced

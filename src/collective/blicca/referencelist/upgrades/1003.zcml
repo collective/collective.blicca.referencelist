@@ -1,0 +1,35 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="collective.blicca.referencelist">
+
+  <genericsetup:registerProfile
+      name="1003"
+      title="collective.blicca.referencelist: upgrade to 1003"
+      directory="1003"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:upgradeSteps
+      source="1002"
+      destination="1003"
+      profile="collective.blicca.referencelist:default">
+
+    <!-- The profile holds only the changed value, as 1001 does. The records
+         import keeps every other field of the existing record. -->
+    <genericsetup:upgradeDepends
+        title="Namespace the block type of the reference list block record"
+        description="Set the record's types to plone-collective.referencelist, as ADR 0025 in plone.blicca.auroraeditor asks."
+        import_profile="collective.blicca.referencelist.upgrades:1003"
+        import_steps="plone.app.registry"
+        />
+
+    <genericsetup:upgradeStep
+        title="Rename the stored reference list blocks"
+        description="Rename every stored referencelist block to plone-collective.referencelist in every JSON field, such as blocks and footer, and reindex block_types."
+        handler=".v1003.upgrade"
+        />
+
+  </genericsetup:upgradeSteps>
+
+</configure>

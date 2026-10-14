@@ -9,7 +9,7 @@
        on the site root. No template: the view hands the block to the
        variation's list template below. -->
   <browser:page
-      name="aurora-block-referencelist"
+      name="aurora-block-plone-collective.referencelist"
       for="*"
       class=".reference_list_block_view.ReferenceListBlockView"
       permission="zope2.View"
