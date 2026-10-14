@@ -4,6 +4,7 @@ import {
   descriptionOf,
   headlineOf,
   headlineTagOf,
+  hrefOf,
   itemTitleTagOf,
   linksItems,
   mergedItems,
@@ -49,6 +50,16 @@ describe('linking', () => {
     expect(linksItems({})).toBe(true);
     expect(linksItems({ linkItems: true })).toBe(true);
     expect(linksItems({ linkItems: false })).toBe(false);
+  });
+
+  it('adds /view to the link when the server sets use_view_action_in_listings', () => {
+    expect(hrefOf({ '@id': '/plone/pic', use_view_action_in_listings: true })).toBe(
+      '/plone/pic/view',
+    );
+    expect(hrefOf({ '@id': '/plone/page', use_view_action_in_listings: false })).toBe(
+      '/plone/page',
+    );
+    expect(hrefOf({ '@id': '/plone/page' })).toBe('/plone/page');
   });
 });
 

@@ -98,6 +98,9 @@ Rules worth knowing:
   (a lead image, or the image of an Image item). Items without a picture
   keep their place without one.
 - An empty list renders its headline and nothing else on the page.
+- An image or a file links to its `/view` page, not to the bare file. The
+  block follows the site setting *Types which use the view action in listing
+  views*, which lists Image and File by default.
 - A block saved before **Link items** existed links its items. Its
   checkbox shows that with `plone.blicca.auroraeditor` later than 1.0.0a4;
   older versions show it unchecked until the author sets it.
@@ -260,7 +263,7 @@ What `BaseReferenceListItemView` gives a template:
 | `position`, `total` | The item's place in the list (0-based) and the number of items |
 | `portal_type` | The item's content type |
 | `linked` | False when the block's **Link items** is off |
-| `url` | The item's link, `None` when the target must not be linked or `linked` is false |
+| `url` | The item's link, `None` when the target must not be linked or `linked` is false. It ends in `/view` when `item["use_view_action_in_listings"]` is true |
 | `title`, `description` | The item's title (its id when it has none) and description |
 | `shows_cards` | True on the `summary` and `grid` variations |
 | `css_class` | `item`, plus `summary` when `shows_cards` |

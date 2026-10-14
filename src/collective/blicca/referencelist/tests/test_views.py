@@ -202,6 +202,19 @@ class TestLinkPolicy(RenderTestCase):
         markup = self.render(references=self.refs(self.page))
         assert 'href="/plone/page"' in markup
 
+    def test_an_image_links_to_its_view(self):
+        image = api.content.create(container=self.portal, type="Image", id="pic", title="Pic")
+        markup = self.render(references=self.refs(image, self.page))
+        assert '<a href="/plone/pic/view">Pic</a>' in markup
+        assert '<a href="/plone/page">A page</a>' in markup
+
+    def test_the_view_action_follows_the_registry(self):
+        image = api.content.create(container=self.portal, type="Image", id="pic", title="Pic")
+        api.portal.set_registry_record("plone.types_use_view_action_in_listings", ["Document"])
+        markup = self.render(references=self.refs(image, self.page))
+        assert '<a href="/plone/pic">Pic</a>' in markup
+        assert '<a href="/plone/page/view">A page</a>' in markup
+
     @pytest.mark.parametrize("target", ["javascript:alert(1)", "data:text/html,x"])
     def test_an_unsafe_target_loses_its_anchor_href(self, target):
         markup = self.render(items=[{"@id": target, "title": "Trap"}])

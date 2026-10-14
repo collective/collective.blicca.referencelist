@@ -9,11 +9,13 @@ item is looked up in the catalog on each load, so a renamed or moved target
 is always shown as it is now, and a deleted or unpublished one disappears.
 """
 
+from plone.registry.interfaces import IRegistry
 from plone.restapi.deserializer.utils import path2uid
 from plone.restapi.interfaces import ISerializeToJsonSummary
 from plone.restapi.serializer.utils import RESOLVEUID_RE
 from Products.CMFCore.utils import getToolByName
 from zope.component import getMultiAdapter
+from zope.component import getUtility
 
 
 def stored_references(value):
@@ -78,6 +80,7 @@ def _summaries_by_uid(context, request, uids):
         return {}
     catalog = getToolByName(context, "portal_catalog")
     brains = catalog(UID=list(uids))
+    view_action_types = getUtility(IRegistry).get("plone.types_use_view_action_in_listings", [])
     form = request.form
     saved = form.get("metadata_fields", None)
     # ``_all`` makes the summary carry image_scales and every other catalog
@@ -85,7 +88,12 @@ def _summaries_by_uid(context, request, uids):
     form["metadata_fields"] = "_all"
     try:
         return {
-            brain.UID: getMultiAdapter((brain, request), ISerializeToJsonSummary)()
+            brain.UID: {
+                **getMultiAdapter((brain, request), ISerializeToJsonSummary)(),
+                # The same key as in plone.restapi's navigation. The renderers
+                # add ``/view`` to the item's link when it is true.
+                "use_view_action_in_listings": brain.portal_type in view_action_types,
+            }
             for brain in brains
         }
     finally:

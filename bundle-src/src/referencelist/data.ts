@@ -198,6 +198,11 @@ export function previewImage(item: Item): PreviewImage | undefined {
   };
 }
 
+/** The item's link, with `/view` added when the server sets `use_view_action_in_listings`. */
+export function hrefOf(item: Item): string {
+  return item.use_view_action_in_listings === true ? `${item['@id']}/view` : item['@id'];
+}
+
 export function titleOf(item: Item): string {
   return asText(item.title) || asText(item.id) || item['@id'];
 }

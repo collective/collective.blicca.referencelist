@@ -14,6 +14,7 @@ import {
   descriptionOf,
   headlineOf,
   headlineTagOf,
+  hrefOf,
   itemTitleTagOf,
   linksItems,
   mergedItems,
@@ -67,7 +68,7 @@ export function ReferenceListView({ data = {}, isEditMode }: ReferenceListViewPr
                 <div className="item-content">
                   <ItemTitleTag>
                     {linked ? (
-                      <a {...(isEditMode ? {} : { href: item['@id'] })}>{titleOf(item)}</a>
+                      <a {...(isEditMode ? {} : { href: hrefOf(item) })}>{titleOf(item)}</a>
                     ) : (
                       titleOf(item)
                     )}
