@@ -102,6 +102,9 @@ function previewImage(item) {
     height: scale.height
   };
 }
+function hrefOf(item) {
+  return item.use_view_action_in_listings === true ? `${item["@id"]}/view` : item["@id"];
+}
 function titleOf(item) {
   return asText$1(item.title) || asText$1(item.id) || item["@id"];
 }
@@ -138,7 +141,7 @@ function ReferenceListView({ data = {}, isEditMode }) {
               }
             ) }) : null,
             /* @__PURE__ */ jsxs("div", { className: "item-content", children: [
-              /* @__PURE__ */ jsx(ItemTitleTag, { children: linked ? /* @__PURE__ */ jsx("a", { ...isEditMode ? {} : { href: item["@id"] }, children: titleOf(item) }) : titleOf(item) }),
+              /* @__PURE__ */ jsx(ItemTitleTag, { children: linked ? /* @__PURE__ */ jsx("a", { ...isEditMode ? {} : { href: hrefOf(item) }, children: titleOf(item) }) : titleOf(item) }),
               description ? /* @__PURE__ */ jsx("p", { children: description }) : null
             ] })
           ]

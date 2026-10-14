@@ -94,6 +94,11 @@ class TestResolveReferences(ResolutionTestCase):
         assert "image_scales" in item
         assert "review_state" in item
 
+    def test_items_carry_the_view_action_flag(self):
+        image = api.content.create(container=self.portal, type="Image", id="pic", title="Pic")
+        items, _ = resolve_references(self.portal, self.request, self._refs(image, self.page))
+        assert [item["use_view_action_in_listings"] for item in items] == [True, False]
+
     def test_a_dangling_reference_lands_in_missing(self):
         references = self._refs(self.page) + [{"@id": "../resolveuid/gone", "UID": "gone"}]
         items, missing = resolve_references(self.portal, self.request, references)

@@ -133,7 +133,11 @@ class BaseReferenceListItemView(BrowserView):
         """The card's link, or ``None`` when the target must not be linked."""
         if not self.linked:
             return None
-        return link_href((self.item or {}).get("@id"))
+        item = self.item or {}
+        href = link_href(item.get("@id"))
+        if href and item.get("use_view_action_in_listings"):
+            return f"{href}/view"
+        return href
 
     @property
     def title(self):
