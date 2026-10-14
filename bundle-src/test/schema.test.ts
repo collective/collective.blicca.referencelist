@@ -7,7 +7,7 @@ describe('the sidebar schema', () => {
   const schema = ReferenceListSchema({ formData: {} });
 
   it('names the block', () => {
-    expect(REFERENCELIST_BLOCK_TYPE).toBe('referencelist');
+    expect(REFERENCELIST_BLOCK_TYPE).toBe('plone-collective.referencelist');
     expect(schema.title).toBe('Reference list');
     expect(schema.required).toEqual([]);
   });

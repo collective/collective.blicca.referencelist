@@ -187,7 +187,7 @@ function ReferenceListIcon(props) {
     }
   );
 }
-const REFERENCELIST_BLOCK_TYPE = "referencelist";
+const REFERENCELIST_BLOCK_TYPE = "plone-collective.referencelist";
 const BACKGROUND_FIELD_NAME = "backgroundColor";
 const VARIATION_CHOICES = [
   ["default", "Default"],

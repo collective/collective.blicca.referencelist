@@ -5,6 +5,11 @@
 
 - The descriptions call the Reference List block a Plone block, not an Aurora
   block.
+- The block's `@type` is now `plone-collective.referencelist` instead of
+  `referencelist`. It takes its namespace from the npm package, as ADR 0025
+  in plone.blicca.auroraeditor asks. The renderer is
+  `@@aurora-block-plone-collective.referencelist`. Upgrade step 1003 renames
+  every stored block and sets the record's `types`.
 - Link images and files to their `/view` page instead of the bare file. The
   site setting *Types which use the view action in listing views* names the
   types. Each item summary has a new `use_view_action_in_listings` key.

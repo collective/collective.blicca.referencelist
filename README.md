@@ -15,7 +15,8 @@ Typical uses:
 The block needs [plone.blicca.auroraeditor](https://github.com/derico-de/plone.blicca.auroraeditor),
 which brings the Aurora editor to Blicca. Its editor half is also a plain Plone
 block package for Aurora, `@plone-collective/aurora-referencelist-block`, see
-[Using the block in Aurora](#using-the-block-in-aurora).
+[Using the block in Aurora](#using-the-block-in-aurora). The block's
+`@type` is `plone-collective.referencelist`.
 
 ## Features
 
@@ -327,7 +328,7 @@ works on every page. Nested blocks inside a text container are transformed
 too.
 
 Two renderers emit the same markup: the Chameleon templates behind the
-`aurora-block-referencelist` view for the public page, and a React `view`
+`aurora-block-plone-collective.referencelist` view for the public page, and a React `view`
 component for the editor canvas and for Aurora frontends. Both are held to
 the shared fixture `tests/anatomy-cases.json` by their test suites.
 

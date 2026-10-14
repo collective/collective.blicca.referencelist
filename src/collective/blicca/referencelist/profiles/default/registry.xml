@@ -23,7 +23,7 @@
 
     <!-- Diagnostics and insert-gating, never dispatch. -->
     <value key="types">
-      <element>referencelist</element>
+      <element>plone-collective.referencelist</element>
     </value>
 
     <value key="enabled">True</value>

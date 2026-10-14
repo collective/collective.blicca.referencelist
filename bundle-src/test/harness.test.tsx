@@ -83,13 +83,13 @@ describe('the block joins Aurora rather than displacing it', () => {
     for (const id of UPSTREAM_BLOCKS) {
       expect((aurora as any).blocks.blocksConfig[id]).toBeDefined();
     }
-    expect((aurora as any).blocks.blocksConfig.referencelist).toBe(ReferenceListBlockInfo);
+    expect((aurora as any).blocks.blocksConfig['plone-collective.referencelist']).toBe(ReferenceListBlockInfo);
     const ids = Object.keys((aurora as any).blocks.blocksConfig);
-    expect(ids.filter((id) => !UPSTREAM_BLOCKS.includes(id))).toEqual(['referencelist']);
+    expect(ids.filter((id) => !UPSTREAM_BLOCKS.includes(id))).toEqual(['plone-collective.referencelist']);
   });
 
   it('has a well-formed entry: id, plain-string title and description, a component icon', () => {
-    expect(ReferenceListBlockInfo.id).toBe('referencelist');
+    expect(ReferenceListBlockInfo.id).toBe('plone-collective.referencelist');
     expect(typeof ReferenceListBlockInfo.title).toBe('string');
     expect(typeof ReferenceListBlockInfo.description).toBe('string');
     expect(typeof ReferenceListBlockInfo.icon).toBe('function');
@@ -181,7 +181,7 @@ describe('bundle hygiene', () => {
       getWidget: () => undefined,
     };
     expect(built.default(probe)).toBe(probe);
-    expect(probe.blocks.blocksConfig.referencelist?.id).toBe('referencelist');
+    expect(probe.blocks.blocksConfig['plone-collective.referencelist']?.id).toBe('plone-collective.referencelist');
     expect(Object.keys(probe.widgets.widget).sort()).toEqual([
       'referencelist_references',
       'referencelist_select',

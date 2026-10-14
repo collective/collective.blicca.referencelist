@@ -14,6 +14,7 @@ class HiddenProfiles:
             "collective.blicca.referencelist:uninstall",
             "collective.blicca.referencelist.upgrades:1001",
             "collective.blicca.referencelist.upgrades:1002",
+            "collective.blicca.referencelist.upgrades:1003",
         ]
 
 
