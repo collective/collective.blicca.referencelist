@@ -41,7 +41,12 @@ function assertNoSharedInBundle(): Plugin {
 }
 
 export default defineConfig({
-  esbuild: { jsx: 'automatic' },
+  esbuild: {
+    jsx: 'automatic',
+    // Read by the esbuild CSS minifier too: it strips comments and
+    // whitespace, and every value ships as written.
+    minifySyntax: false,
+  },
   plugins: [
     {
       // enforce post: in a lib build Vite's internal css-post plugin emits
@@ -73,6 +78,9 @@ export default defineConfig({
     emptyOutDir: false,
     target: 'es2022',
     minify: false,
+    // The blocks view links the stylesheet itself, outside Plone's resource
+    // registry, so this build is the only place it gets minified.
+    cssMinify: 'esbuild',
     sourcemap: true,
     rollupOptions: {
       external: SHARED_MODULES,
